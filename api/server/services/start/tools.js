@@ -8,6 +8,7 @@ const { Tools, ImageVisionTool } = require('librechat-data-provider');
 const {
   getToolkitKey,
   getGitHubCompareCatalogTools,
+  getNotificationCatalogTools,
   isToolModuleFile,
   oaiToolkit,
   geminiToolkit,
@@ -107,7 +108,11 @@ function loadAndFormatTools({ directory, adminFilter = [], adminIncluded = [] })
     tools.push(formattedTool);
   }
 
-  tools.push(ImageVisionTool, ...getGitHubCompareCatalogTools(adminIncluded, adminFilter));
+  tools.push(
+    ImageVisionTool,
+    ...getGitHubCompareCatalogTools(adminIncluded, adminFilter),
+    ...getNotificationCatalogTools(adminIncluded, adminFilter),
+  );
 
   return tools.reduce((map, tool) => {
     map[tool.function.name] = tool;

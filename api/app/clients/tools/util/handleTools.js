@@ -3,6 +3,7 @@ const { Calculator, createSearchTool, createCodeExecutionTool } = require('@libr
 const {
   checkAccess,
   createGitHubCompareTool,
+  createNotificationTool,
   getProxyDispatcher,
   toolkitParent,
   toolRolePermissions,
@@ -75,7 +76,14 @@ const { getUserPluginAuthValue } = require('~/server/services/PluginService');
 const { loadAuthValues } = require('~/server/services/Tools/credentials');
 const { getMCPServerTools, checkCapability } = require('~/server/services/Config');
 const { getMCPServersRegistry } = require('~/config');
-const { getRoleByName, setMemory, deleteMemory, getFormattedMemories } = require('~/models');
+const {
+  getRoleByName,
+  setMemory,
+  deleteMemory,
+  getFormattedMemories,
+  getConvo,
+  enqueueNotification,
+} = require('~/models');
 
 /**
  * Validates the availability and authentication of tools for a user based on environment variables or user-specific plugin authentication values.
@@ -228,6 +236,15 @@ const loadTools = async ({
   };
 
   const customConstructors = {
+    notify_user: () =>
+      createNotificationTool({
+        userId: user,
+        tenantId: getTenantId(),
+        conversationId: options.req?.body?.conversationId,
+        config: options.req?.config?.notifications,
+        getConversation: getConvo,
+        enqueue: enqueueNotification,
+      }),
     github_compare: () =>
       createGitHubCompareTool({
         config: options.req?.config?.githubCompare,

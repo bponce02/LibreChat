@@ -72,6 +72,7 @@ export * from './protection';
 export * from './imports';
 /* Memory */
 export * from './memory';
+export * from './notifications';
 /* Model Specs */
 export * from './modelSpecs';
 /* Agents */

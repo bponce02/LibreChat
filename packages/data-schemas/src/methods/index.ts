@@ -35,6 +35,8 @@ import { createKeyMethods, type KeyMethods } from './key';
 import { createFileMethods } from './file';
 /* Memories */
 import { createMemoryMethods, type MemoryMethods } from './memory';
+import { createNotificationMethods } from './notification';
+import type { NotificationMethods } from './notification';
 /* Tool Favorites */
 import {
   createToolFavoriteMethods,
@@ -282,6 +284,7 @@ export type AllMethods = ToolApprovalGrantStorage &
   MessageMethods &
   ConversationMethods &
   ChatProjectMethods &
+  NotificationMethods &
   TxMethods &
   TransactionMethods &
   SpendTokensMethods &
@@ -497,6 +500,7 @@ export function createMethods(
     ...createKeyMethods(mongoose),
     ...createFileMethods(mongoose),
     ...createMemoryMethods(mongoose),
+    ...createNotificationMethods(mongoose),
     ...createToolFavoriteMethods(mongoose),
     ...createAgentCategoryMethods(mongoose),
     ...createAgentApiKeyMethods(mongoose),
@@ -600,6 +604,7 @@ export type {
   ConversationMethods,
   AgentEventActorReconciliationStorageMetrics,
   ChatProjectMethods,
+  NotificationMethods,
   TxMethods,
   TransactionMethods,
   SpendTokensMethods,

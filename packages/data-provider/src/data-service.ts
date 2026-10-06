@@ -8,6 +8,7 @@ import type {
 } from './types/traces';
 import type { TInsightsAccessResponse, TInsightsParams, TInsightsResponse } from './types/insights';
 import type { ScheduleMCPConsentView, ConfirmScheduleMCPConsent } from './types/scheduleConsent';
+import type { NotificationList, NotificationPolicy } from './notifications';
 import type { TFileConfig } from './file-config';
 import type * as tl from './types/tools';
 import type * as t from './types';
@@ -1035,6 +1036,18 @@ export function archiveConversation(
 
 export function archiveAllConversations(): Promise<t.TArchiveAllConversationsResponse> {
   return request.post(endpoints.archiveAllConversations(), {});
+}
+
+export function listNotifications(): Promise<NotificationList> {
+  return request.get(endpoints.notifications());
+}
+
+export function getNotificationConfig(): Promise<NotificationPolicy> {
+  return request.get(endpoints.notificationConfig());
+}
+
+export function readNotification(id: string): Promise<{ ok: true }> {
+  return request.patch(endpoints.readNotification(id), {});
 }
 
 export function listProjects(params?: q.ProjectListParams): Promise<q.ProjectListResponse> {

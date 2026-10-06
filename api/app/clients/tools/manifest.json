@@ -91,6 +91,13 @@
     "authConfig": []
   },
   {
+    "name": "Notify User",
+    "pluginKey": "notify_user",
+    "description": "Send a notification to your LibreChat inbox, linked to the current conversation.",
+    "agentsOnly": true,
+    "authConfig": []
+  },
+  {
     "name": "Calculator",
     "pluginKey": "calculator",
     "description": "Perform simple and complex mathematical calculations.",

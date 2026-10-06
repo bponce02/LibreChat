@@ -5,6 +5,7 @@ import {
 } from '@librechat/agents';
 import type { ExtendedJsonSchema } from './schema';
 import { AskUserQuestionToolDefinition } from '~/agents/hitl/askUserQuestionTool';
+import { notificationDefinition } from '~/notifications/catalog';
 import { geminiToolkit } from '~/tools/toolkits/gemini';
 import { oaiToolkit } from '~/tools/toolkits/oai';
 
@@ -440,6 +441,12 @@ export const toolDefinitions: Record<string, ToolRegistryDefinition> = {
  * registers the tool pair on match.
  */
 const agentToolDefinitions: Record<string, ToolRegistryDefinition> = {
+  notify_user: {
+    name: notificationDefinition.name,
+    description: notificationDefinition.description,
+    schema: notificationDefinition.parameters,
+    toolType: 'builtin',
+  },
   github_compare: {
     name: GitHubCompareToolDefinition.name,
     description: GitHubCompareToolDefinition.description,

@@ -1,4 +1,5 @@
 import { createAgentQueuedTurnModel, createAgentQueuedTurnSequenceModel } from './queuedTurn';
+import { createNotificationModel, createNotificationQuotaModel } from './notification';
 import { createAgentTriggerLaneSequenceModel } from './triggerLaneSequence';
 import { createScheduleModel, createScheduleRunModel } from './schedule';
 import { getTenantIndexMigrationHint } from '~/migrations/tenantIndexes';
@@ -53,6 +54,8 @@ import logger from '~/config/winston';
  */
 export function createModels(mongoose: typeof import('mongoose')): {
   User: ReturnType<typeof createUserModel>;
+  Notification: ReturnType<typeof createNotificationModel>;
+  NotificationQuota: ReturnType<typeof createNotificationQuotaModel>;
   ToolApprovalGrant: ReturnType<typeof createToolApprovalGrantModel>;
   Token: ReturnType<typeof createTokenModel>;
   Session: ReturnType<typeof createSessionModel>;
@@ -104,6 +107,8 @@ export function createModels(mongoose: typeof import('mongoose')): {
 } {
   const models = {
     User: createUserModel(mongoose),
+    Notification: createNotificationModel(mongoose),
+    NotificationQuota: createNotificationQuotaModel(mongoose),
     ToolApprovalGrant: createToolApprovalGrantModel(mongoose),
     Token: createTokenModel(mongoose),
     Session: createSessionModel(mongoose),
