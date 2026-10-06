@@ -3,6 +3,8 @@ cache: true
 notifications:
   enabled: true
   pollIntervalMs: 5000
+  push:
+    enabled: true
 endpoints:
   openAI:
     titleConvo: false

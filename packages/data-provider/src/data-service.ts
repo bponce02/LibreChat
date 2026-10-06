@@ -1,5 +1,12 @@
 import type { AxiosResponse } from 'axios';
 import type {
+  NotificationList,
+  NotificationPolicy,
+  NotificationPushDevice,
+  NotificationPushSubscription,
+  RegisterPushDeviceResult,
+} from './notifications';
+import type {
   TTracePage,
   TTracePageParams,
   TTraceAvailability,
@@ -8,7 +15,6 @@ import type {
 } from './types/traces';
 import type { TInsightsAccessResponse, TInsightsParams, TInsightsResponse } from './types/insights';
 import type { ScheduleMCPConsentView, ConfirmScheduleMCPConsent } from './types/scheduleConsent';
-import type { NotificationList, NotificationPolicy } from './notifications';
 import type { TFileConfig } from './file-config';
 import type * as tl from './types/tools';
 import type * as t from './types';
@@ -1036,6 +1042,21 @@ export function archiveConversation(
 
 export function archiveAllConversations(): Promise<t.TArchiveAllConversationsResponse> {
   return request.post(endpoints.archiveAllConversations(), {});
+}
+
+export function listPushDevices(): Promise<{ devices: NotificationPushDevice[] }> {
+  return request.get(endpoints.notificationDevices());
+}
+
+export function registerPushDevice(input: {
+  label: string;
+  subscription: NotificationPushSubscription;
+}): Promise<RegisterPushDeviceResult> {
+  return request.post(endpoints.notificationDevices(), input);
+}
+
+export function revokePushDevice(id: string): Promise<{ ok: true }> {
+  return request.delete(endpoints.notificationDevice(id));
 }
 
 export function listNotifications(): Promise<NotificationList> {

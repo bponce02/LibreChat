@@ -193,6 +193,9 @@ export const forkConversation = () => `${conversationsRoot}/fork`;
 export const duplicateConversation = () => `${conversationsRoot}/duplicate`;
 
 export const notifications = () => `${BASE_URL}/api/notifications`;
+export const notificationDevices = () => `${notifications()}/devices`;
+export const notificationDevice = (id: string) =>
+  `${notificationDevices()}/${encodeURIComponent(id)}`;
 export const notificationConfig = () => `${notifications()}/config`;
 export const readNotification = (id: string) => `${notifications()}/${encodeURIComponent(id)}/read`;
 

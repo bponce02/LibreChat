@@ -2,7 +2,7 @@ import { notificationsConfigSchema } from 'librechat-data-provider';
 import type { NotificationMethods, AppConfig } from '@librechat/data-schemas';
 import type { Request, Response, RequestHandler } from 'express';
 
-type NotificationRequest = Request & {
+export type NotificationRequest = Request & {
   config?: AppConfig;
   user?: { id?: string };
 };

@@ -49,7 +49,7 @@ jobs:
       - name: Focused service, persistence, UI and lifecycle tests
         run: |
           (cd packages/api && npx jest src/notifications --runInBand --coverage=false)
-          (cd packages/data-schemas && npx jest src/methods/notification.spec.ts --runInBand --coverage=false)
+          (cd packages/data-schemas && npx jest src/methods/notification.spec.ts src/methods/pushDevice.spec.ts --runInBand --coverage=false)
           (cd client && npx jest src/components/SidePanel/Notifications --runInBand --coverage=false)
           (cd api && npx jest server/controllers/UserController.spec.js server/controllers/__tests__/deleteUser.spec.js server/controllers/__tests__/maybeUninstallOAuthMCP.spec.js server/utils/__tests__/staticCache.spec.js --runInBand --coverage=false)
           node --test client/sw/push.test.cjs

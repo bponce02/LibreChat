@@ -8,19 +8,12 @@ import type {
 } from 'librechat-data-provider';
 import type { Model } from 'mongoose';
 import type { NotificationRecord, NotificationQuotaRecord } from '~/types/notification';
-import { getTenantId, SYSTEM_TENANT_ID } from '~/config/tenantContext';
+import { notificationOwnerScope as ownerScope } from './notificationScope';
 
 const hash = (values: string[]) =>
   createHash('sha256').update(JSON.stringify(values)).digest('hex');
 const duplicateKey = (error: unknown) =>
   error != null && typeof error === 'object' && 'code' in error && error.code === 11000;
-
-function ownerScope(userId: string, tenantId = getTenantId()) {
-  if (!userId || tenantId === SYSTEM_TENANT_ID || tenantId !== getTenantId()) {
-    throw new Error('Notification operations require an owning user and tenant context');
-  }
-  return { userId, tenantId: tenantId ?? null };
-}
 
 function project(record: NotificationRecord): NotificationItem {
   return {

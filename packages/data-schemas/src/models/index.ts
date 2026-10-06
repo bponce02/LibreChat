@@ -18,6 +18,7 @@ import { createAgentApiKeyModel } from './agentApiKey';
 import { createTransactionModel } from './transaction';
 import { createPromptGroupModel } from './promptGroup';
 import { createSystemGrantModel } from './systemGrant';
+import { createPushDeviceModel } from './pushDevice';
 import { createPluginAuthModel } from './pluginAuth';
 import { createSharedLinkModel } from './sharedLink';
 import { createAccessRoleModel } from './accessRole';
@@ -56,6 +57,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   User: ReturnType<typeof createUserModel>;
   Notification: ReturnType<typeof createNotificationModel>;
   NotificationQuota: ReturnType<typeof createNotificationQuotaModel>;
+  PushDeviceRegistry: ReturnType<typeof createPushDeviceModel>;
   ToolApprovalGrant: ReturnType<typeof createToolApprovalGrantModel>;
   Token: ReturnType<typeof createTokenModel>;
   Session: ReturnType<typeof createSessionModel>;
@@ -109,6 +111,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
     User: createUserModel(mongoose),
     Notification: createNotificationModel(mongoose),
     NotificationQuota: createNotificationQuotaModel(mongoose),
+    PushDeviceRegistry: createPushDeviceModel(mongoose),
     ToolApprovalGrant: createToolApprovalGrantModel(mongoose),
     Token: createTokenModel(mongoose),
     Session: createSessionModel(mongoose),

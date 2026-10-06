@@ -114,6 +114,7 @@ jest.mock('~/models', () => ({
   deleteConversationTags: jest.fn(),
   deleteAllUserMemories: jest.fn(),
   deleteUserNotifications: jest.fn().mockResolvedValue(undefined),
+  deleteUserPushDevices: jest.fn().mockResolvedValue(undefined),
   deleteActions: jest.fn(),
   deleteTokens: jest.fn(),
   removeUserFromAllGroups: jest.fn(),
@@ -182,6 +183,7 @@ jest.mock('~/cache', () => ({
 
 const { deleteUserController } = require('~/server/controllers/UserController');
 const { deleteOwnedAgentCheckpoints } = require('@librechat/api');
+const { deleteUserPushDevices } = require('~/models');
 
 function createRes() {
   const res = {};
@@ -241,6 +243,7 @@ describe('deleteUserController - 2FA enforcement', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith({ message: 'User deleted' });
     expect(mockDeleteMessages).toHaveBeenCalled();
+    expect(deleteUserPushDevices).toHaveBeenCalledWith('user1');
     expect(mockDeleteUserAgents).toHaveBeenCalledWith('user1');
     expect(mockDeleteUserPrompts).toHaveBeenCalledWith('user1');
     expect(mockDeleteUserSkills).toHaveBeenCalledWith('user1');

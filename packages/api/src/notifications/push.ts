@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import webPush from 'web-push';
 import { ECDH, createECDH } from 'node:crypto';
-import type { PushTransportConfig, NotificationPushPayload } from 'librechat-data-provider';
+import type {
+  PushTransportConfig,
+  NotificationPushPayload,
+  NotificationPushSubscription,
+} from 'librechat-data-provider';
 import type { SendResult, PushSubscription, RequestOptions } from 'web-push';
 export type PushDeliveryResult = {
   status: 'accepted' | 'expired' | 'retry' | 'rejected' | 'disabled';
@@ -17,6 +21,7 @@ export const webPushSender: PushSender = (subscription, payload, options) =>
 const subscriptionSchema = z
   .object({
     endpoint: z.string().url().max(2048),
+    expirationTime: z.number().nonnegative().nullable().optional(),
     keys: z
       .object({
         p256dh: z
@@ -87,18 +92,9 @@ export function createPushTransport(dependencies: {
   }
   return async (subscription, payload) => {
     if (!config.enabled) return { status: 'disabled' };
-    const parsedSubscription = subscriptionSchema.safeParse(subscription);
+    const parsedSubscription = validatePushSubscription(subscription, config.allowedOrigins);
     const parsedPayload = payloadSchema.safeParse(payload);
-    if (!parsedSubscription.success || !parsedPayload.success) return { status: 'rejected' };
-    const endpoint = new URL(parsedSubscription.data.endpoint);
-    if (
-      endpoint.protocol !== 'https:' ||
-      endpoint.username ||
-      endpoint.password ||
-      endpoint.hash ||
-      !origins.has(endpoint.origin)
-    )
-      return { status: 'rejected' };
+    if (!parsedSubscription.ok || !parsedPayload.success) return { status: 'rejected' };
     const body = JSON.stringify(parsedPayload.data);
     if (Buffer.byteLength(body, 'utf8') > 3072) return { status: 'rejected' };
     try {
@@ -125,6 +121,27 @@ export function createPushTransport(dependencies: {
       return classifyStatus(status);
     }
   };
+}
+
+export function validatePushSubscription(
+  input: unknown,
+  allowedOrigins: readonly string[],
+):
+  | { ok: true; data: NotificationPushSubscription }
+  | { ok: false; error: { code: 'INVALID_SUBSCRIPTION' } } {
+  const parsed = subscriptionSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: { code: 'INVALID_SUBSCRIPTION' } };
+  const endpoint = new URL(parsed.data.endpoint);
+  if (
+    endpoint.protocol !== 'https:' ||
+    endpoint.username ||
+    endpoint.password ||
+    endpoint.hash ||
+    !allowedOrigins.includes(endpoint.origin)
+  ) {
+    return { ok: false, error: { code: 'INVALID_SUBSCRIPTION' } };
+  }
+  return { ok: true, data: { endpoint: endpoint.href, keys: parsed.data.keys } };
 }
 
 function classifyStatus(status: number): PushDeliveryResult {

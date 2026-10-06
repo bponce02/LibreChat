@@ -1,5 +1,6 @@
 export enum QueryKeys {
   notifications = 'notifications',
+  notificationDevices = 'notificationDevices',
   notificationConfig = 'notificationConfig',
   messages = 'messages',
   /* Full content of one tool-call part, fetched when its preview is not enough */
@@ -129,6 +130,8 @@ export const DynamicQueryKeys = {
 
 export enum MutationKeys {
   readNotification = 'readNotification',
+  registerPushDevice = 'registerPushDevice',
+  revokePushDevice = 'revokePushDevice',
   resetToolApprovalGrants = 'resetToolApprovalGrants',
   subagentControl = 'subagentControl',
   cancelBackgroundTasks = 'cancelBackgroundTasks',
