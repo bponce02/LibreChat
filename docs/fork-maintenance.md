@@ -51,4 +51,6 @@ npm run lighthouse:run
 
 The notification lane uses a disposable database and a synthetic provider, not production. Verify desktop/mobile and light/dark screenshots, source URLs, error/retry behavior, restored sessions, and disabled-by-default behavior. For push, add real worker tests and on-device installed-PWA checks; browser emulation is not proof of OS delivery.
 
+The PWA feature branch adds `.github/workflows/fork-notifications.yml` for pull requests targeting `fork/homelab`. It runs focused tests, typechecks, production builds and isolated browser checks on Node 24 without provider secrets. It has not run remotely until these local commits are pushed and a PR is opened. Keep the existing Lighthouse gate as an additional release requirement.
+
 Run scoped import sorting, lint, formatting, and `git diff --check`. Review the exact candidate SHA, build a pinned image, back up the database, and schedule deployment separately. Do not restart the live app during active conversations. Roll back the image to the prior pinned SHA if needed; do not assume database changes can be rolled back by an image change.

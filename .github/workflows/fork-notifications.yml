@@ -1,0 +1,67 @@
+name: Fork notification regression
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [fork/homelab]
+    paths:
+      - '.github/workflows/fork-notifications.yml'
+      - 'api/**'
+      - 'client/**'
+      - 'packages/**'
+      - 'e2e/**'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fork-notifications-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  notifications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - name: Build native packages and production client
+        run: |
+          npm run build:data-provider
+          npm run build:data-schemas
+          npm run build:api
+          npm run build:client-package
+          npm run build:client
+      - name: Explicit typechecks
+        run: |
+          for workspace in packages/data-provider packages/data-schemas packages/api client; do
+            (cd "$workspace" && npx tsc --noEmit)
+          done
+      - name: Focused service, persistence, UI and lifecycle tests
+        run: |
+          (cd packages/api && npx jest src/notifications --runInBand --coverage=false)
+          (cd packages/data-schemas && npx jest src/methods/notification.spec.ts --runInBand --coverage=false)
+          (cd client && npx jest src/components/SidePanel/Notifications --runInBand --coverage=false)
+          (cd api && npx jest server/controllers/UserController.spec.js server/controllers/__tests__/deleteUser.spec.js server/controllers/__tests__/maybeUninstallOAuthMCP.spec.js server/utils/__tests__/staticCache.spec.js --runInBand --coverage=false)
+          node --test client/sw/push.test.cjs
+      - name: Isolated inbox and background-worker browser checks
+        env:
+          E2E_BASE_URL: http://localhost:3099
+        run: npx playwright test --config=e2e/playwright.config.notifications.ts
+      - name: Preserve browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: notification-screenshots
+          path: e2e/notifications/.test-results/**/*.png
+          if-no-files-found: ignore
+          retention-days: 5
