@@ -81,6 +81,7 @@
     "@types/react": "^18.2.18",
     "@types/sanitize-html": "^2.16.1",
     "@types/supertest": "^7.2.0",
+    "@types/web-push": "^3.6.4",
     "@types/yauzl": "^2.10.3",
     "aws-sdk-client-mock": "^4.1.0",
     "babel-plugin-replace-ts-export-assignment": "^0.0.2",
@@ -185,6 +186,7 @@
     "express-rate-limit": "^8.5.1",
     "helmet": "^8.3.0",
     "proxy-from-env": "^2.1.0",
-    "re2js": "^2.8.6"
+    "re2js": "^2.8.6",
+    "web-push": "^3.6.7"
   }
 }

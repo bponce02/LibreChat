@@ -29,7 +29,7 @@ Notifications are an agent capability, not only automatic completion alerts. Exa
 - Browser/mobile Web Push requires opt-in device subscriptions, a service worker, revocation, and delivery retry handling. Keep destinations user-configured; agents cannot choose arbitrary recipients or URLs.
 - Pi should eventually reach the same authenticated notification service through a tool integration.
 
-Implemented locally: `notify_user` registration, authenticated inbox/config/read routes, durable Mongo storage and quotas, account-deletion cleanup, and a localized sidebar inbox with an unread badge, polling, read state, and conversation links. The actual agent tool → database → browser flow passes against an isolated server and synthetic model. This is not deployed. Browser/device push and Pi's connection to the same notification service remain pending.
+Implemented locally: `notify_user` registration, authenticated inbox/config/read routes, durable Mongo storage and quotas, account-deletion cleanup, and a localized sidebar inbox with an unread badge, polling, read state, and conversation links. The actual agent tool → database → browser flow passes against an isolated server and synthetic model. This is not deployed. Browser/device push and Pi's connection to the same notification service remain pending. The separate `feat/pwa-push-notifications` branch now contains the worker and transport foundation; see [PWA push](pwa-push.md) for implemented behavior, test limits and remaining integration.
 
 Enable in `librechat.yaml` and add **Notify User** to the agent's tools:
 

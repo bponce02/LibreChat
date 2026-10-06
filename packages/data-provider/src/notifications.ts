@@ -1,6 +1,33 @@
 import { z } from 'zod';
 
+export const pushTransportConfigSchema = z.object({
+  enabled: z.boolean().default(false),
+  publicKey: z.string().optional(),
+  subject: z.string().optional(),
+  allowedOrigins: z
+    .array(z.string().url())
+    .min(1)
+    .max(20)
+    .default([
+      'https://fcm.googleapis.com',
+      'https://updates.push.services.mozilla.com',
+      'https://web.push.apple.com',
+    ]),
+  ttlSeconds: z.number().int().min(0).max(86400).default(3600),
+  timeoutMs: z.number().int().min(1000).max(30000).default(10000),
+});
+
+export type PushTransportConfig = z.infer<typeof pushTransportConfigSchema>;
+export interface NotificationPushPayload {
+  version: 1;
+  notificationId: string;
+  conversationId: string;
+  title: string;
+  body: string;
+}
+
 export const notificationsConfigSchema = z.object({
+  push: pushTransportConfigSchema.optional(),
   enabled: z.boolean().default(false),
   maxTitleLength: z.number().int().min(1).max(500).default(120),
   maxBodyLength: z.number().int().min(1).max(10000).default(2000),
