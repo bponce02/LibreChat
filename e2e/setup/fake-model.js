@@ -3562,6 +3562,42 @@ function resolveResponses({ graph, messages, text, toolNames }) {
     });
   }
 
+  const notificationLabel = getMarkerValue(text, 'E2E_NOTIFY_USER:');
+  if (notificationLabel) {
+    const callId = `call_e2e_notification_${notificationLabel}`;
+    if (!toolNames.has('notify_user')) {
+      return { responses: ['E2E notification failed: tool was not advertised'] };
+    }
+    return {
+      responses: ['', ''],
+      toolCalls: [
+        {
+          id: callId,
+          name: 'notify_user',
+          args: {
+            title: 'Backup complete',
+            body: 'The homelab backup finished successfully. No action is needed.',
+          },
+          type: 'tool_call',
+        },
+      ],
+      resolveOnStream: (messages) => {
+        const result = findToolMessage(messages, callId);
+        if (!result) {
+          return null;
+        }
+        const content = getContentText(result.content);
+        return {
+          responses: [
+            content.includes('"status":"queued"')
+              ? 'E2E notification queued'
+              : `E2E notification failed: ${content}`,
+          ],
+        };
+      },
+    };
+  }
+
   const askUserQuestionLabel = getMarkerValue(text, ASK_USER_QUESTION_MARKER);
   if (askUserQuestionLabel) {
     return askUserQuestionResponses(askUserQuestionLabel, toolNames);

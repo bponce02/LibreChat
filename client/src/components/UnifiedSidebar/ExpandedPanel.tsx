@@ -105,17 +105,25 @@ const NavIconButton = memo(function NavIconButton({
         <Button
           size="icon"
           variant="ghost"
-          aria-label={localize(link.title)}
+          aria-label={`${localize(link.title)}${link.label ? ` (${link.label})` : ''}`}
           aria-pressed={isActive}
           disabled={link.disabled}
           data-testid={`nav-panel-${link.id}`}
           className={cn(
-            'h-9 w-9 rounded-lg',
+            'relative h-9 w-9 rounded-lg',
             isActive ? 'bg-surface-active-alt text-text-primary' : 'text-text-secondary',
           )}
           onClick={handleClick}
         >
           <link.icon className="h-5 w-5" aria-hidden="true" />
+          {link.label && (
+            <span
+              aria-hidden="true"
+              className="border-border-light bg-surface-primary text-text-primary absolute -top-1 -right-1 min-w-4 rounded-full border px-1 text-xs leading-4"
+            >
+              {link.label}
+            </span>
+          )}
         </Button>
       }
     />

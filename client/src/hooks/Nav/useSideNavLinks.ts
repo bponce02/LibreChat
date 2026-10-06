@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { MCPIcon, OpenAIMinimalIcon } from '@librechat/client';
 import {
   Bot,
+  Bell,
   Brain,
   Bookmark,
   NotebookPen,
@@ -26,8 +27,10 @@ import {
   useGetAgentsConfig,
   useHasAccess,
 } from '~/hooks';
+import { useNotificationConfig, useNotifications } from '~/data-provider/Notifications';
 import MCPBuilderPanel from '~/components/SidePanel/MCPBuilder/MCPBuilderPanel';
 import AgentPanelSwitch from '~/components/SidePanel/Agents/AgentPanelSwitch';
+import NotificationPanel from '~/components/SidePanel/Notifications/Panel';
 import BookmarkPanel from '~/components/SidePanel/Bookmarks/BookmarkPanel';
 import PanelSwitch from '~/components/SidePanel/Builder/PanelSwitch';
 import { SchedulePanel } from '~/components/SidePanel/Schedules';
@@ -94,12 +97,29 @@ export default function useSideNavLinks({
     permission: Permissions.USE,
   });
   const { availableMCPServers } = useMCPServerManager();
+  const { data: notificationConfig } = useNotificationConfig();
+  const { data: notifications } = useNotifications();
 
   const { agentsConfig } = useGetAgentsConfig({ endpointsConfig });
   const { skillsEnabled } = useAgentCapabilities(agentsConfig?.capabilities);
 
   const Links = useMemo(() => {
     const links: NavLink[] = [];
+
+    if (notificationConfig?.enabled) {
+      const unreadCount = notifications?.unreadCount ?? 0;
+      let label = '';
+      if (unreadCount > 0) {
+        label = unreadCount > 99 ? '99+' : String(unreadCount);
+      }
+      links.push({
+        title: 'com_ui_notifications',
+        label,
+        icon: Bell,
+        id: 'notifications',
+        Component: NotificationPanel,
+      });
+    }
 
     if (
       endpointsConfig?.[EModelEndpoint.agents] &&
@@ -235,6 +255,8 @@ export default function useSideNavLinks({
 
     return links;
   }, [
+    notificationConfig?.enabled,
+    notifications?.unreadCount,
     endpoint,
     endpointsConfig,
     keyProvided,

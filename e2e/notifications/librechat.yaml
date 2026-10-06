@@ -1,0 +1,8 @@
+version: 1.3.6
+cache: true
+notifications:
+  enabled: true
+  pollIntervalMs: 5000
+endpoints:
+  openAI:
+    titleConvo: false
