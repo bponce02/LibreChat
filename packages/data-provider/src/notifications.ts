@@ -13,7 +13,6 @@ export const pushTransportConfigSchema = z.object({
       'https://updates.push.services.mozilla.com',
       'https://web.push.apple.com',
     ]),
-  maxDevices: z.number().int().min(1).max(20).default(5),
   ttlSeconds: z.number().int().min(0).max(86400).default(3600),
   timeoutMs: z.number().int().min(1000).max(30000).default(10000),
 });
@@ -27,9 +26,7 @@ export interface NotificationPushDevice {
   label: string;
   createdAt: string;
 }
-export type RegisterPushDeviceResult =
-  | { ok: true; device: NotificationPushDevice }
-  | { ok: false; error: { code: 'DEVICE_LIMIT' | 'DEVICE_CONFLICT' } };
+export type RegisterPushDeviceResult = { ok: true; device: NotificationPushDevice };
 
 export type PushTransportConfig = z.infer<typeof pushTransportConfigSchema>;
 export interface NotificationPushPayload {

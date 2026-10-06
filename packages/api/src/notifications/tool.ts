@@ -4,7 +4,9 @@ import { notificationsConfigSchema } from 'librechat-data-provider';
 import type { StructuredToolInterface } from '@langchain/core/tools';
 import type { NotificationMethods } from '@librechat/data-schemas';
 import type { NotificationPolicy } from 'librechat-data-provider';
+import type { PushDeliveryDependencies } from './delivery';
 import { createNotificationService } from './service';
+import { deliverNotificationPush } from './delivery';
 
 export interface NotificationToolDependencies {
   userId: string;
@@ -13,6 +15,7 @@ export interface NotificationToolDependencies {
   config?: Partial<NotificationPolicy>;
   getConversation: (userId: string, conversationId: string) => Promise<object | null>;
   enqueue: NotificationMethods['enqueueNotification'];
+  push?: PushDeliveryDependencies;
 }
 
 export function createNotificationTool(
@@ -32,18 +35,25 @@ export function createNotificationTool(
         return JSON.stringify({ ok: false, error: { code: 'NOT_AUTHORIZED' } });
       }
       try {
-        return JSON.stringify(
-          await notify(
-            {
-              userId: dependencies.userId,
-              tenantId: dependencies.tenantId,
-              conversationId: dependencies.conversationId,
-              toolCallId,
-            },
-            input,
-            policy,
-          ),
+        const result = await notify(
+          {
+            userId: dependencies.userId,
+            tenantId: dependencies.tenantId,
+            conversationId: dependencies.conversationId,
+            toolCallId,
+          },
+          input,
+          policy,
         );
+        if (!result.ok || result.duplicate || !dependencies.push) return JSON.stringify(result);
+        const push = await deliverNotificationPush(dependencies.push, policy, dependencies.userId, {
+          version: 1,
+          notificationId: result.notificationId,
+          conversationId: dependencies.conversationId,
+          title: input.title.slice(0, 120),
+          body: input.body.slice(0, 512),
+        });
+        return JSON.stringify({ ...result, push });
       } catch {
         return JSON.stringify({ ok: false, error: { code: 'NOTIFICATION_UNAVAILABLE' } });
       }

@@ -10,8 +10,17 @@ const {
 } = require('~/models');
 
 const router = express.Router();
-const handlers = createNotificationHandlers({ listNotifications, readNotification });
-const devices = createPushDeviceHandlers({ registerPushDevice, listPushDevices, revokePushDevice });
+const handlers = createNotificationHandlers({
+  listNotifications,
+  readNotification,
+  pushPrivateKey: process.env.LIBRECHAT_WEB_PUSH_PRIVATE_KEY,
+});
+const devices = createPushDeviceHandlers({
+  registerPushDevice,
+  listPushDevices,
+  revokePushDevice,
+  pushPrivateKey: process.env.LIBRECHAT_WEB_PUSH_PRIVATE_KEY,
+});
 router.use(requireJwtAuth, configMiddleware);
 router.get('/devices', devices.list);
 router.post('/devices', devices.register);

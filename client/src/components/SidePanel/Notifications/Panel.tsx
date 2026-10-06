@@ -4,6 +4,7 @@ import { Button } from '@librechat/client';
 import { useNotifications, useReadNotification } from '~/data-provider/Notifications';
 import { PanelContent, PanelHeader } from '~/components/ui';
 import { useLocalize } from '~/hooks';
+import PushControls from './Push';
 
 export default function NotificationPanel() {
   const localize = useLocalize();
@@ -19,6 +20,7 @@ export default function NotificationPanel() {
           </p>
         )}
       </PanelHeader>
+      <PushControls />
       {notifications.isError && (
         <div role="alert" className="text-text-primary space-y-2 px-3 py-2 text-sm">
           <p>{localize('com_ui_notifications_load_error')}</p>

@@ -4,6 +4,7 @@ import type { PushDeviceMethods } from '@librechat/data-schemas';
 import type { RequestHandler, Response } from 'express';
 import type { NotificationRequest } from './handlers';
 import { validatePushSubscription } from './push';
+import { isPushReady } from './delivery';
 
 const registrationSchema = z
   .object({ label: z.string().trim().min(1).max(100), subscription: z.unknown() })
@@ -13,7 +14,7 @@ export function createPushDeviceHandlers(
   dependencies: Pick<
     PushDeviceMethods,
     'registerPushDevice' | 'listPushDevices' | 'revokePushDevice'
-  >,
+  > & { pushPrivateKey?: string },
 ): { register: RequestHandler; list: RequestHandler; revoke: RequestHandler } {
   const register = async (req: NotificationRequest, res: Response) => {
     const userId = req.user?.id;
@@ -22,7 +23,7 @@ export function createPushDeviceHandlers(
       return;
     }
     const policy = notificationsConfigSchema.parse(req.config?.notifications ?? {});
-    if (!policy.enabled || !policy.push?.enabled) {
+    if (!policy.push || !isPushReady(policy, dependencies.pushPrivateKey)) {
       res.status(403).json({ error: { code: 'DISABLED' } });
       return;
     }
@@ -44,13 +45,8 @@ export function createPushDeviceHandlers(
         userId,
         subscription.data,
         input.data.label,
-        policy.push.maxDevices,
       );
-      if (!result.ok) {
-        res.status(result.error.code === 'DEVICE_LIMIT' ? 429 : 409).json(result);
-        return;
-      }
-      res.json(result);
+      res.json({ ok: true, device: result });
     } catch {
       res.status(503).json({ error: { code: 'NOTIFICATION_UNAVAILABLE' } });
     }

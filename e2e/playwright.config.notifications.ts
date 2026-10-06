@@ -28,6 +28,8 @@ export default defineConfig({
       OPENAI_REVERSE_PROXY: 'http://127.0.0.1:1/v1',
       ASSISTANTS_API_KEY: '',
       E2E_USE_MEMORY_MONGO: 'true',
+      LIBRECHAT_WEB_PUSH_PRIVATE_KEY: Buffer.alloc(32, 1).toString('base64url'),
+      NODE_OPTIONS: `${server.env.NODE_OPTIONS ?? ''} --require=${path.resolve(__dirname, 'setup/fake-push.cjs')}`,
     },
   })),
 });

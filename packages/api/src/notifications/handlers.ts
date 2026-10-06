@@ -1,6 +1,7 @@
 import { notificationsConfigSchema } from 'librechat-data-provider';
 import type { NotificationMethods, AppConfig } from '@librechat/data-schemas';
 import type { Request, Response, RequestHandler } from 'express';
+import { isPushReady } from './delivery';
 
 export type NotificationRequest = Request & {
   config?: AppConfig;
@@ -8,10 +9,14 @@ export type NotificationRequest = Request & {
 };
 
 export function createNotificationHandlers(
-  dependencies: Pick<NotificationMethods, 'listNotifications' | 'readNotification'>,
+  dependencies: Pick<NotificationMethods, 'listNotifications' | 'readNotification'> & {
+    pushPrivateKey?: string;
+  },
 ): { config: RequestHandler; list: RequestHandler; read: RequestHandler } {
   const config = (req: NotificationRequest, res: Response) => {
-    res.json(notificationsConfigSchema.parse(req.config?.notifications ?? {}));
+    const policy = notificationsConfigSchema.parse(req.config?.notifications ?? {});
+    if (policy.push) policy.push.enabled = isPushReady(policy, dependencies.pushPrivateKey);
+    res.json(policy);
   };
   const list = async (req: NotificationRequest, res: Response) => {
     const userId = req.user?.id;

@@ -1,3 +1,4 @@
+import webPush from 'web-push';
 import { expect, test } from '@playwright/test';
 import type { NotificationList } from 'librechat-data-provider';
 import {
@@ -10,6 +11,8 @@ import { openAgentBuilder } from '../specs/mock/agents.helpers';
 
 test('agent tool persists an owner-scoped notification and the inbox reads it', async ({
   page,
+  context,
+  baseURL,
 }, testInfo) => {
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -17,10 +20,46 @@ test('agent tool persists an owner-scoped notification and the inbox reads it', 
   await page.addInitScript(() =>
     localStorage.setItem('color-theme', sessionStorage.getItem('e2e-mode') ?? 'light'),
   );
+  await context.grantPermissions(['notifications'], { origin: baseURL });
+  await page.addInitScript(
+    (subscription) => {
+      const current = () => ({
+        endpoint: subscription.endpoint,
+        toJSON: () => subscription,
+        unsubscribe: async () => {
+          sessionStorage.removeItem('e2e-push');
+          return true;
+        },
+      });
+      Object.defineProperty(PushManager.prototype, 'getSubscription', {
+        value: async () => (sessionStorage.getItem('e2e-push') ? current() : null),
+      });
+      Object.defineProperty(PushManager.prototype, 'subscribe', {
+        value: async () => {
+          sessionStorage.setItem('e2e-push', 'yes');
+          return current();
+        },
+      });
+    },
+    {
+      endpoint: 'https://fcm.googleapis.com/fcm/send/e2e-ui',
+      keys: {
+        p256dh: webPush.generateVAPIDKeys().publicKey,
+        auth: Buffer.alloc(16, 1).toString('base64url'),
+      },
+    },
+  );
   await page.goto('/c/new');
+  await page.evaluate(() => navigator.serviceWorker.ready.then(() => true));
   await page.getByTestId('nav-panel-notifications').click();
   await expect(page.getByText('No notifications yet.', { exact: false })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('empty-inbox.png'), fullPage: true });
+  await page
+    .getByRole('button', { name: 'Enable notifications on this device', exact: true })
+    .click();
+  await expect(
+    page.getByRole('button', { name: 'Disable notifications on this device', exact: true }),
+  ).toBeVisible();
   expect((await page.request.get('/api/notifications')).status()).toBe(401);
   const token = await getAccessToken(page);
   const agent = await requestJson<{ id: string; name: string }>(page, {
@@ -41,7 +80,9 @@ test('agent tool persists an owner-scoped notification and the inbox reads it', 
   await form.getByRole('button', { name: 'Select Agent' }).click();
   await sendMessageAndWaitForCompletion(page, 'E2E_NOTIFY_USER:inbox');
   await expect(
-    page.getByTestId('screenshot-target').getByText('E2E notification queued', { exact: true }),
+    page
+      .getByTestId('screenshot-target')
+      .getByText('E2E notification queued; push accepted', { exact: true }),
   ).toBeVisible();
   const conversationPath = new URL(page.url()).pathname;
   const inbox = await fetchJson<NotificationList>(page, '/api/notifications', token);
@@ -90,5 +131,24 @@ test('agent tool persists an owner-scoped notification and the inbox reads it', 
   await page.unroute('**/api/notifications');
   await page.getByRole('button', { name: 'Retry', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Backup complete' })).toBeVisible();
+  await page
+    .getByRole('button', { name: 'Disable notifications on this device', exact: true })
+    .click();
+  await expect(
+    page.getByRole('button', { name: 'Enable notifications on this device', exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole('button', { name: 'Enable notifications on this device', exact: true }),
+  ).toBeVisible();
+  await context.clearPermissions();
+  await context.grantPermissions([], { origin: baseURL });
+  await page.reload();
+  expect(await page.evaluate(() => Notification.permission)).toBe('denied');
+  await page
+    .getByRole('button', { name: 'Enable notifications on this device', exact: true })
+    .click();
+  await expect(page.getByText('Notifications are blocked.', { exact: false })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('permission-blocked.png'), fullPage: true });
   expect(pageErrors).toEqual([]);
 });

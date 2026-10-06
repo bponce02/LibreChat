@@ -3,6 +3,7 @@ import webPush from 'web-push';
 import request from 'supertest';
 import { createPushDeviceHandlers } from './devices';
 
+const vapid = webPush.generateVAPIDKeys();
 const subscription = {
   endpoint: 'https://fcm.googleapis.com/fcm/send/test-device',
   expirationTime: null,
@@ -13,10 +14,11 @@ const subscription = {
 };
 const device = { id: 'a'.repeat(64), label: 'Phone', createdAt: '2026-01-01T00:00:00Z' };
 function fixture({ enabled = true, owner = 'owner' } = {}) {
-  const registerPushDevice = jest.fn().mockResolvedValue({ ok: true, device });
+  const registerPushDevice = jest.fn().mockResolvedValue(device);
   const listPushDevices = jest.fn().mockResolvedValue([device]);
   const revokePushDevice = jest.fn().mockResolvedValue(true);
   const handlers = createPushDeviceHandlers({
+    pushPrivateKey: vapid.privateKey,
     registerPushDevice,
     listPushDevices,
     revokePushDevice,
@@ -26,7 +28,12 @@ function fixture({ enabled = true, owner = 'owner' } = {}) {
   app.use((req, _res, next) => {
     Object.defineProperty(req, 'user', { value: { id: owner } });
     Object.defineProperty(req, 'config', {
-      value: { notifications: { enabled, push: { enabled, maxDevices: 2 } } },
+      value: {
+        notifications: {
+          enabled,
+          push: { enabled, publicKey: vapid.publicKey, subject: 'mailto:test@example.test' },
+        },
+      },
     });
     next();
   });
@@ -47,7 +54,6 @@ test('standard browser subscription JSON is normalized and bound to the authenti
     'owner',
     { endpoint: subscription.endpoint, keys: subscription.keys },
     'Phone',
-    2,
   );
 });
 
@@ -103,16 +109,8 @@ test('revoke validates IDs and does not disclose existence outside the owner sco
   expect(response.body).toEqual({ ok: true });
 });
 
-test('device quota and binding conflicts remain distinguishable from outages', async () => {
+test('storage outages expose only safe errors', async () => {
   const f = fixture();
-  f.registerPushDevice.mockResolvedValue({ ok: false, error: { code: 'DEVICE_LIMIT' } });
-  await request(f.app).post('/').send({ label: 'Phone', subscription }).expect(429);
-  f.registerPushDevice.mockResolvedValue({ ok: false, error: { code: 'DEVICE_CONFLICT' } });
-  const conflict = await request(f.app)
-    .post('/')
-    .send({ label: 'Phone', subscription })
-    .expect(409);
-  expect(conflict.body.error.code).toBe('DEVICE_CONFLICT');
   f.registerPushDevice.mockRejectedValue(new Error('private endpoint and keys'));
   const outage = await request(f.app).post('/').send({ label: 'Phone', subscription }).expect(503);
   expect(outage.body).toEqual({ error: { code: 'NOTIFICATION_UNAVAILABLE' } });

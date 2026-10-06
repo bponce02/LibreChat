@@ -57,7 +57,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   User: ReturnType<typeof createUserModel>;
   Notification: ReturnType<typeof createNotificationModel>;
   NotificationQuota: ReturnType<typeof createNotificationQuotaModel>;
-  PushDeviceRegistry: ReturnType<typeof createPushDeviceModel>;
+  PushDevice: ReturnType<typeof createPushDeviceModel>;
   ToolApprovalGrant: ReturnType<typeof createToolApprovalGrantModel>;
   Token: ReturnType<typeof createTokenModel>;
   Session: ReturnType<typeof createSessionModel>;
@@ -111,7 +111,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
     User: createUserModel(mongoose),
     Notification: createNotificationModel(mongoose),
     NotificationQuota: createNotificationQuotaModel(mongoose),
-    PushDeviceRegistry: createPushDeviceModel(mongoose),
+    PushDevice: createPushDeviceModel(mongoose),
     ToolApprovalGrant: createToolApprovalGrantModel(mongoose),
     Token: createTokenModel(mongoose),
     Session: createSessionModel(mongoose),

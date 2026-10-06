@@ -5,6 +5,8 @@ notifications:
   pollIntervalMs: 5000
   push:
     enabled: true
+    subject: mailto:test@example.test
+    publicKey: BG_wO5SSQc4drdQ1GeaWDgqFtBppoFwygQOqK84VlMoWPE91OlW_AdxT9sCwx-7ni0DG_30lqW4igrmJzvccFEo
 endpoints:
   openAI:
     titleConvo: false

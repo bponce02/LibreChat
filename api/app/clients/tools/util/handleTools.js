@@ -4,6 +4,7 @@ const {
   checkAccess,
   createGitHubCompareTool,
   createNotificationTool,
+  webPushSender,
   getProxyDispatcher,
   toolkitParent,
   toolRolePermissions,
@@ -83,6 +84,8 @@ const {
   getFormattedMemories,
   getConvo,
   enqueueNotification,
+  getPushSubscriptions,
+  revokePushDevice,
 } = require('~/models');
 
 /**
@@ -244,6 +247,12 @@ const loadTools = async ({
         config: options.req?.config?.notifications,
         getConversation: getConvo,
         enqueue: enqueueNotification,
+        push: {
+          getPushSubscriptions,
+          revokePushDevice,
+          privateKey: process.env.LIBRECHAT_WEB_PUSH_PRIVATE_KEY,
+          send: webPushSender,
+        },
       }),
     github_compare: () =>
       createGitHubCompareTool({

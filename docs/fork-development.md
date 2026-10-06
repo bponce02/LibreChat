@@ -26,10 +26,10 @@ Notifications are an agent capability, not only automatic completion alerts. Exa
 - Agent-callable tool with bounded input, explicit configuration, rate limits, and durable deduplication.
 - Return queued/accepted status, not a claim that a device displayed the notification.
 - Reuse existing frontend reply-alert preferences and accessibility patterns where appropriate. `useReplyAlerts.ts` already provides open-browser reply notifications and sound; it is not a durable general notification service or closed-browser push implementation.
-- Browser/mobile Web Push requires opt-in device subscriptions, a service worker, revocation, and delivery retry handling. Keep destinations user-configured; agents cannot choose arbitrary recipients or URLs.
+- Browser/mobile Web Push uses opt-in device subscriptions, the existing service worker and direct best-effort sending. For this personal app, there is no delivery queue or retry worker. Keep destinations user-configured; agents cannot choose arbitrary recipients or URLs.
 - Pi should eventually reach the same authenticated notification service through a tool integration.
 
-Implemented locally: `notify_user` registration, authenticated inbox/config/read routes, durable Mongo storage and quotas, account-deletion cleanup, and a localized sidebar inbox with an unread badge, polling, read state, and conversation links. The actual agent tool → database → browser flow passes against an isolated server and synthetic model. This is not deployed. Browser/device push and Pi's connection to the same notification service remain pending. The separate `feat/pwa-push-notifications` branch now contains the worker, transport, and authenticated device-registry foundation; see [PWA push](pwa-push.md) for implemented behavior, test limits and remaining integration.
+Implemented locally: `notify_user` registration, authenticated inbox/config/read routes, durable Mongo storage and quotas, account-deletion cleanup, and a localized sidebar inbox with an unread badge, polling, read state, and conversation links. The actual agent tool → database → browser flow passes against an isolated server and synthetic model. This is not deployed. Pi's connection to the same notification service remains pending. On `feat/pwa-push-notifications`, device push now uses a simple enable/disable button and immediate sending from `notify_user`. Device quotas and cross-account binding machinery were removed. See [PWA push](pwa-push.md) for setup and test limits; actual-phone delivery is not yet verified.
 
 Enable in `librechat.yaml` and add **Notify User** to the agent's tools:
 
@@ -47,7 +47,7 @@ Only `enabled` is needed; the other values show defaults. With configuration omi
 
 `GET /api/notifications/config`, `GET /api/notifications`, and `PATCH /api/notifications/:id/read` require JWT authentication. List/read use the authenticated user and tenant, not query/body recipients. The bounded inbox puts unread entries first so older unread updates remain reachable as newer ones are marked read. It is not a paginated archive of all read notifications. Notifications persist independently of their source conversation until account deletion; deleting the conversation does not erase the notification text, and its link may no longer resolve. Do not put secrets in notification content.
 
-The sidebar does not request OS notification permission or send Web Push. `queued` means accepted into the durable inbox, not displayed on a device. Normal chat reply alerts remain independent.
+The sidebar requests OS notification permission only when its enable button is clicked. New tool notifications immediately attempt push to registered devices; push failures do not erase the inbox entry. `queued` means accepted into the durable inbox, not displayed on a device. Normal chat reply alerts remain independent.
 
 Local verification:
 

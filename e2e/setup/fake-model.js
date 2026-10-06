@@ -3587,11 +3587,12 @@ function resolveResponses({ graph, messages, text, toolNames }) {
           return null;
         }
         const content = getContentText(result.content);
+        const success = content.includes('"accepted":1')
+          ? 'E2E notification queued; push accepted'
+          : 'E2E notification queued';
         return {
           responses: [
-            content.includes('"status":"queued"')
-              ? 'E2E notification queued'
-              : `E2E notification failed: ${content}`,
+            content.includes('"status":"queued"') ? success : `E2E notification failed: ${content}`,
           ],
         };
       },
