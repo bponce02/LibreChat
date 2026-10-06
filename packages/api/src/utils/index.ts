@@ -1,3 +1,4 @@
+export * from './static';
 export * from './axios';
 export * from './azure';
 export * from './code';

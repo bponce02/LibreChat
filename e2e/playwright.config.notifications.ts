@@ -12,6 +12,7 @@ if (servers.length !== 1) {
 export default defineConfig({
   ...mockConfig,
   testDir: 'notifications',
+  use: { ...mockConfig.use, channel: process.env.E2E_CHROMIUM_CHANNEL || 'chromium' },
   outputDir: 'notifications/.test-results',
   timeout: 120000,
   retries: 0,

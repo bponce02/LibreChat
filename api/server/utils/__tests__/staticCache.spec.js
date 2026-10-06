@@ -41,6 +41,7 @@ describe('staticCache', () => {
     fs.writeFileSync(indexFile, htmlContent);
     fs.writeFileSync(manifestFile, jsonContent);
     fs.writeFileSync(swFile, swContent);
+    fs.writeFileSync(path.join(testDir, 'sw-push.js'), swContent);
 
     // Create precompressed versions of some files
     fs.writeFileSync(testFile + '.gz', zlib.gzipSync(jsContent));
@@ -106,6 +107,12 @@ describe('staticCache', () => {
 
       const response = await request(app).get('/manifest.json').expect(200);
 
+      expect(response.headers['cache-control']).toBe('no-store, no-cache, must-revalidate');
+    });
+
+    it('should revalidate the imported push worker so PWA updates cannot retain stale handlers', async () => {
+      app.use(staticCache(testDir));
+      const response = await request(app).get('/sw-push.js').expect(200);
       expect(response.headers['cache-control']).toBe('no-store, no-cache, must-revalidate');
     });
 

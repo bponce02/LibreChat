@@ -1,4 +1,5 @@
 const path = require('path');
+const { isMutableAppAsset } = require('@librechat/api');
 const express = require('express');
 const expressStaticGzip = require('express-static-gzip');
 
@@ -39,13 +40,7 @@ function staticCache(staticPath, options = {}) {
     }
     const fileName = filePath ? path.basename(filePath) : '';
 
-    if (
-      fileName === 'index.html' ||
-      fileName.endsWith('.webmanifest') ||
-      fileName === 'manifest.json' ||
-      fileName === 'sw.js' ||
-      fileName === 'sw-heal.js'
-    ) {
+    if (isMutableAppAsset(fileName)) {
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     } else {
       res.setHeader('Cache-Control', `public, max-age=${maxAge}, s-maxage=${sMaxAge}`);
