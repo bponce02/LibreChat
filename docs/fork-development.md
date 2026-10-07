@@ -92,7 +92,7 @@ Requirements:
 - Keep direct tools available initially. Deferred discovery/tool exposure modes and persisted cross-script state can follow after a safe basic execution path is proven.
 - Tests: tool discovery isolation, argument validation, required approvals, partial failures, quotas, infinite loops, cancellation, output truncation, injection through tool results, and notification deduplication under parallel calls.
 
-Status: requirements recorded; runtime implementation not started. Codemode does not become available merely by adding this document.
+Status: the QuickJS worker runtime and run-local tool factory are implemented and tested. Agent registration and authoritative host dispatcher integration (including approval-required nested calls/replay and image forwarding) remain pending. Codemode is not available to agents yet. See [codemode foundation](codemode.md).
 
 ## Development order
 

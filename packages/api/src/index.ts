@@ -74,6 +74,7 @@ export * from './imports';
 export * from './memory';
 export * from './notifications';
 export * from './pi';
+export * from './codemode';
 /* Model Specs */
 export * from './modelSpecs';
 /* Agents */

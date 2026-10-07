@@ -70,6 +70,7 @@ export interface AppConfig {
   githubCompare?: TCustomConfig['githubCompare'];
   notifications?: TCustomConfig['notifications'];
   piSync?: TCustomConfig['piSync'];
+  codemode?: TCustomConfig['codemode'];
   /** Source-scoped content filter configuration */
   filters?: FiltersConfig;
   /** Message filter configuration (PII and future filter types) */
