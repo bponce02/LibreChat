@@ -6,6 +6,7 @@ import {
 import type { ExtendedJsonSchema } from './schema';
 import { AskUserQuestionToolDefinition } from '~/agents/hitl/askUserQuestionTool';
 import { notificationDefinition } from '~/notifications/catalog';
+import { codemodeDefinition } from '~/codemode/catalog';
 import { geminiToolkit } from '~/tools/toolkits/gemini';
 import { oaiToolkit } from '~/tools/toolkits/oai';
 
@@ -441,6 +442,12 @@ export const toolDefinitions: Record<string, ToolRegistryDefinition> = {
  * registers the tool pair on match.
  */
 const agentToolDefinitions: Record<string, ToolRegistryDefinition> = {
+  codemode: {
+    name: codemodeDefinition.name,
+    description: codemodeDefinition.description,
+    schema: codemodeDefinition.parameters,
+    toolType: 'builtin',
+  },
   notify_user: {
     name: notificationDefinition.name,
     description: notificationDefinition.description,

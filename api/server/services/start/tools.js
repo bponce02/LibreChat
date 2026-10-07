@@ -9,6 +9,7 @@ const {
   getToolkitKey,
   getGitHubCompareCatalogTools,
   getNotificationCatalogTools,
+  getCodemodeCatalogTools,
   isToolModuleFile,
   oaiToolkit,
   geminiToolkit,
@@ -112,6 +113,7 @@ function loadAndFormatTools({ directory, adminFilter = [], adminIncluded = [] })
     ImageVisionTool,
     ...getGitHubCompareCatalogTools(adminIncluded, adminFilter),
     ...getNotificationCatalogTools(adminIncluded, adminFilter),
+    ...getCodemodeCatalogTools(adminIncluded, adminFilter),
   );
 
   return tools.reduce((map, tool) => {

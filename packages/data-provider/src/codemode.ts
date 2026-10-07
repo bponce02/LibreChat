@@ -28,6 +28,13 @@ export const codemodeConfigSchema = z.object({
     .max(1024 * 1024)
     .default(128 * 1024),
   maxToolCalls: z.number().int().min(1).max(1000).default(50),
+  maxImages: z.number().int().min(1).max(20).default(8),
+  maxImageBytes: z
+    .number()
+    .int()
+    .min(1024)
+    .max(10 * 1024 * 1024)
+    .default(2 * 1024 * 1024),
   concurrency: z.number().int().min(1).max(20).default(4),
 });
 export type CodemodeConfig = z.infer<typeof codemodeConfigSchema>;
@@ -36,9 +43,14 @@ export interface CodemodeToolDescriptor {
   description: string;
   inputSchema: Record<string, unknown>;
 }
+export interface CodemodeImage {
+  type: 'image_url';
+  image_url: { url: string };
+}
 export interface CodemodeResult {
   ok: boolean;
   output: string[];
+  images?: string[];
   error?:
     | 'DISABLED'
     | 'INVALID_CODE'

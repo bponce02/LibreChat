@@ -49,6 +49,22 @@ test('native Pi import, live history refresh and binding protections', async ({ 
   expect(imported.status()).toBe(200);
   const link = (await imported.json()) as { conversationId: string; projectId: string };
   expect((await sync()).status()).toBe(200);
+  const notification = {
+    sessionId: snapshot.sessionId,
+    toolCallId: 'pi-call-one',
+    title: 'Pi backup complete',
+    body: 'Forwarded from the Pi tool.',
+  };
+  expect(
+    (await page.request.post('/api/pi-sync/notifications', { data: notification })).status(),
+  ).toBe(401);
+  const notify = () =>
+    page.request.post('/api/pi-sync/notifications', {
+      headers: { Authorization: `Bearer ${key}` },
+      data: notification,
+    });
+  expect((await notify()).status()).toBe(200);
+  expect((await (await notify()).json()).duplicate).toBe(true);
   await page.context().clearCookies();
   await page.goto('/login');
   await login(page, user);
@@ -57,6 +73,12 @@ test('native Pi import, live history refresh and binding protections', async ({ 
   await expect(page.getByText('The backup is healthy.', { exact: true })).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: 'Linked to Pi' })).toBeVisible();
   const token = await getAccessToken(page);
+  const inbox = await requestJson<{
+    notifications: Array<{ title: string; conversationId: string }>;
+  }>(page, { path: '/api/notifications', token, method: 'GET' });
+  expect(inbox.notifications).toEqual([
+    expect.objectContaining({ title: notification.title, conversationId: link.conversationId }),
+  ]);
   const rejected = await page.request.post('/api/agents/chat/Local%20Pi', {
     headers: { Authorization: `Bearer ${token}` },
     data: {

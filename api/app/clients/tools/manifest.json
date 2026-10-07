@@ -91,6 +91,13 @@
     "authConfig": []
   },
   {
+    "name": "JavaScript Codemode",
+    "pluginKey": "codemode",
+    "description": "Discover and batch this agent’s tools using isolated JavaScript.",
+    "agentsOnly": true,
+    "authConfig": []
+  },
+  {
     "name": "Notify User",
     "pluginKey": "notify_user",
     "description": "Send a notification to your LibreChat inbox, linked to the current conversation.",

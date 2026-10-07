@@ -25,18 +25,24 @@ export function createCodemodeTool(deps: {
         ) {
           return JSON.stringify({ ok: false, output: [], error: 'UNAVAILABLE' });
         }
-        return JSON.stringify(
-          await runCodemode(
-            code,
-            policy,
-            {
-              tools: host.tools,
-              invoke: (name, input, signal, callId) =>
-                host.invoke(name, input, signal, `${id}:${callId}`),
-            },
-            config.signal,
-          ),
+        const result = await runCodemode(
+          code,
+          policy,
+          {
+            tools: host.tools,
+            invoke: (name, input, signal, callId) =>
+              host.invoke(name, input, signal, `${id}:${callId}`),
+          },
+          config.signal,
         );
+        if (!result.ok || !result.images?.length) return JSON.stringify(result);
+        const pictures = result.images.map((ref) => host.getImage?.(ref));
+        if (pictures.some((picture) => !picture))
+          return JSON.stringify({ ok: false, output: result.output, error: 'SCRIPT_ERROR' });
+        return [
+          { type: 'text' as const, text: JSON.stringify(result) },
+          ...pictures.filter((picture) => picture !== undefined),
+        ];
       } catch {
         return JSON.stringify({ ok: false, output: [], error: 'UNAVAILABLE' });
       }
@@ -44,7 +50,7 @@ export function createCodemodeTool(deps: {
     {
       name: 'codemode',
       description:
-        'Run isolated JavaScript with top-level await. Use searchTools(query), describeTool(name), tools[name](args), text(value), and return. Only authorized tools supplied by this run are available. No Node, filesystem, network or module imports. Select output instead of dumping intermediate tool results. Already executed tool effects are not rolled back by cancellation.',
+        'Run isolated JavaScript with top-level await. Use searchTools(query), describeTool(name), tools[name](args), text(value), image(ref), and return. Image tool results expose opaque refs; only those refs can be displayed. Only authorized tools supplied by this run are available. No Node, filesystem, network or module imports. Select output instead of dumping intermediate tool results. Already executed tool effects are not rolled back by cancellation.',
       schema: z.object({ code: z.string().max(policy.maxCodeBytes) }).strict(),
     },
   );

@@ -4,11 +4,13 @@ import type {
   CodemodeConfig,
   CodemodeToolDescriptor,
   CodemodeResult,
+  CodemodeImage,
 } from 'librechat-data-provider';
 import { codemodeWorker } from './worker';
 
 export interface CodemodeHost {
   tools: CodemodeToolDescriptor[];
+  getImage?(ref: string): CodemodeImage | undefined;
   invoke(name: string, input: unknown, signal: AbortSignal, callId: string): Promise<unknown>;
 }
 type Call = { type: 'call'; id: number; name: string; input: unknown };

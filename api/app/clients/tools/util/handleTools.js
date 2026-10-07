@@ -4,6 +4,7 @@ const {
   checkAccess,
   createGitHubCompareTool,
   createNotificationTool,
+  createCodemodeTool,
   webPushSender,
   getProxyDispatcher,
   toolkitParent,
@@ -239,6 +240,13 @@ const loadTools = async ({
   };
 
   const customConstructors = {
+    codemode: () =>
+      createCodemodeTool({
+        policy: options.req?.config?.codemode,
+        getHost: async () => {
+          throw new Error('Codemode host not bound');
+        },
+      }),
     notify_user: () =>
       createNotificationTool({
         userId: user,

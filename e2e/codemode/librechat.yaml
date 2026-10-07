@@ -1,0 +1,9 @@
+version: 1.3.6
+cache: true
+notifications:
+  enabled: true
+codemode:
+  enabled: true
+endpoints:
+  openAI:
+    titleConvo: false

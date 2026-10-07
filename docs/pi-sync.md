@@ -28,6 +28,21 @@ The owner must exist; snapshots cannot choose a recipient. Strict tenant-isolate
 
 Configuration defaults: 15-second browser polling, 2 MiB snapshots, 2,000 messages, 256 Ki characters per message. These bounds are configurable under `piSync`; defaults preserve the prototype's import limits.
 
+## Pi notifications
+
+The Pi bridge registers `notify_user` with title/body arguments only. It forwards the actual session and tool-call IDs to `/api/pi-sync/notifications`, using the same private sync credential. LibreChat derives the owner/chat from the existing binding. A session must be imported first. Duplicate calls do not resend push.
+
+On the laptop create `~/.local/state/pi-gateway/librechat-notify.json`:
+
+```json
+{
+  "url": "https://librechat.develium.dev/api/pi-sync/notifications",
+  "keyFile": "/home/bponce/.local/state/pi-gateway/librechat-sync.key"
+}
+```
+
+Keep the raw key file mode `0600`. Reload the extension only once your current turn is finished; new sessions load it automatically. No automatic completion notification or new permission prompt is added.
+
 ## Verification
 
 Focused API tests exercise replay, partial writes, turn correlation, branch changes, identity guards and input validation. A real disposable Mongo test exercises the native store. `e2e/playwright.config.pi.ts` checks authenticated reads, import replay, automatic terminal-message refresh and mutation guards in the real app, with mobile/desktop light/dark screenshots.

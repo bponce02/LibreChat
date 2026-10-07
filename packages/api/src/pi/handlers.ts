@@ -1,8 +1,8 @@
-import { timingSafeEqual } from 'node:crypto';
 import { piSyncConfigSchema } from 'librechat-data-provider';
 import type { AppConfig, PiSyncLink, PiSyncStore } from '@librechat/data-schemas';
 import type { Request, Response, RequestHandler } from 'express';
 import { createPiSyncService, PiSyncError } from './service';
+import { authorizePiPublisher } from './auth';
 
 type PiRequest = Request & { user?: { id?: string } };
 
@@ -51,16 +51,7 @@ export function createPiSyncHandlers(deps: {
   return {
     async sync(req, res) {
       try {
-        if (!deps.standalone || !deps.key || deps.key.length < 32)
-          throw new PiSyncError(503, 'PI_SYNC_DISABLED');
-        const actual = Buffer.from(req.headers.authorization ?? '');
-        const expected = Buffer.from(`Bearer ${deps.key}`);
-        if (
-          req.headers.origin ||
-          actual.length !== expected.length ||
-          !timingSafeEqual(actual, expected)
-        )
-          throw new PiSyncError(401, 'NOT_AUTHORIZED');
+        authorizePiPublisher(req, deps.key, deps.standalone);
         const config = piSyncConfigSchema.parse((await deps.getConfig()).piSync ?? {});
         res.json(await sync(req.body, config));
       } catch (error) {

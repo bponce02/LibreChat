@@ -3562,6 +3562,37 @@ function resolveResponses({ graph, messages, text, toolNames }) {
     });
   }
 
+  const codemodeLabel = getMarkerValue(text, 'E2E_CODEMODE:');
+  if (codemodeLabel) {
+    const callId = `call_e2e_codemode_${codemodeLabel}`;
+    if (!toolNames.has('codemode')) return { responses: ['E2E codemode not advertised'] };
+    return {
+      responses: ['', ''],
+      toolCalls: [
+        {
+          id: callId,
+          name: 'codemode',
+          args: {
+            code: `text(searchTools('notify')); const result = await tools.notify_user({title:'Codemode complete',body:'JavaScript called the notification tool.'}); text(result); return 'sandbox complete';`,
+          },
+          type: 'tool_call',
+        },
+      ],
+      resolveOnStream: (messages) => {
+        const result = findToolMessage(messages, callId);
+        if (!result) return null;
+        const content = getContentText(result.content);
+        return {
+          responses: [
+            content.includes('sandbox complete') && content.includes('queued')
+              ? 'E2E codemode completed without prompts'
+              : `E2E codemode failed: ${content}`,
+          ],
+        };
+      },
+    };
+  }
+
   const notificationLabel = getMarkerValue(text, 'E2E_NOTIFY_USER:');
   if (notificationLabel) {
     const callId = `call_e2e_notification_${notificationLabel}`;

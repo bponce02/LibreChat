@@ -1,5 +1,7 @@
 version: 1.3.6
 cache: true
+notifications:
+  enabled: true
 piSync:
   enabled: true
   ownerId: 0123456789abcdef01234567

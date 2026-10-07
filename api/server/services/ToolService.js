@@ -59,6 +59,8 @@ const {
   resolveAttachedWorkspaceAdmissionOptions,
   resolveAttachedWorkspaceRequestTimeoutMs,
   createContextProgrammaticBashTool,
+  attachCodemodeHost,
+  getCodemodeToolNames,
   withRequestCodeInputs,
   resolveAgentCodeExecution,
   resolveCodeExecutionWorkspaceContext,
@@ -2171,6 +2173,7 @@ async function loadToolsForExecution({
   runFileCodeExecutionContext,
 }) {
   const appConfig = req.config;
+  toolNames = getCodemodeToolNames(toolNames, agent?.tools, appConfig?.codemode);
   const allLoadedTools = [];
   const runtimeRequestBody = requestBody ?? req.body;
   const mcpRequestScopedConnections = requestScopedConnections ?? getMCPRequestContext(req, res);
@@ -2531,6 +2534,13 @@ async function loadToolsForExecution({
         `Skipping action tool execution. User: ${req.user.id} | Agent: ${agent.id} | Tools: ${actionToolNames.join(', ')}`,
     );
   }
+
+  attachCodemodeHost({
+    tools: allLoadedTools,
+    registry: toolRegistry,
+    policy: appConfig?.codemode,
+    filters: appConfig?.filters,
+  });
 
   if (isPTC && allLoadedTools.length > 0) {
     const ptcToolMap = new Map();

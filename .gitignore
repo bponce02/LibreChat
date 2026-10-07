@@ -195,6 +195,8 @@ scripts/activity-labels/results/
 /e2e/lighthouse/.test-results/
 /e2e/notifications/.test-results/
 /e2e/pi/.test-results/
+/e2e/codemode/.test-results/
+!e2e/codemode/librechat.yaml
 !e2e/pi/librechat.yaml
 # Chrome user-data directories a Lighthouse run leaves in the repository root when the browser
 # is handed a Windows profile path from WSL: the whole path arrives as one directory name.

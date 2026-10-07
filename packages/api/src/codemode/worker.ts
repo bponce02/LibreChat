@@ -13,6 +13,7 @@ const { getQuickJS } = require(workerData.engine);
   let nextId = 0;
   let finished = false;
   const output = [];
+  const images = [];
   let outputBytes = 0;
   let result;
   const fail = code => {
@@ -37,7 +38,7 @@ const { getQuickJS } = require(workerData.engine);
     try { emit(vm.dump(state.value)); } catch { state.value.dispose(); fail('LIMIT'); return; }
     state.value.dispose();
     finished = true;
-    parentPort.postMessage({ type: 'done', result: { ok: true, output } });
+    parentPort.postMessage({ type: 'done', result: { ok: true, output, ...(images.length && { images }) } });
   }
   const bridge = vm.newFunction('__call', (name, args) => {
     const toolName = vm.dump(name);
@@ -51,6 +52,14 @@ const { getQuickJS } = require(workerData.engine);
     return deferred.handle;
   });
   const print = vm.newFunction('__text', value => { emit(vm.dump(value)); return vm.undefined; });
+  const picture = vm.newFunction('__image', value => {
+    const ref = vm.dump(value);
+    if (typeof ref !== 'string' || !/^image-[a-f0-9]{64}$/.test(ref) || images.length >= workerData.policy.maxImages) throw new Error('Invalid image reference');
+    images.push(ref);
+    return vm.undefined;
+  });
+  vm.setProp(vm.global, '__image', picture);
+  picture.dispose();
   vm.setProp(vm.global, '__call', bridge);
   vm.setProp(vm.global, '__text', print);
   bridge.dispose();
@@ -59,6 +68,7 @@ const { getQuickJS } = require(workerData.engine);
     'const __descriptors = ' + JSON.stringify(workerData.tools) + ';' +
     'const tools = Object.freeze(Object.fromEntries(__descriptors.map(d => [d.name, args => __call(d.name, args)])));' +
     'const text = value => __text(value);' +
+    'const image = ref => __image(ref);' +
     'const searchTools = query => __descriptors.filter(d => (d.name + " " + d.description).toLowerCase().includes(String(query).toLowerCase())).map(d => ({name:d.name,description:d.description}));' +
     'const describeTool = name => __descriptors.find(d => d.name === name) ?? null;'
   );

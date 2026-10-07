@@ -10,12 +10,12 @@ Script APIs implemented: top-level `await`, `tools[name](args)`, `searchTools(qu
 
 ## Current availability
 
-The runtime and tool factory are implemented and tested. **The tool is not yet registered or available to agents.** Host integration remains pending: wire the existing authoritative dispatcher, including approval-required nested calls and continuation/replay, before registering it. No fake approval bypass is provided merely because this is a single-user deployment.
+The tool is registered for agents when enabled. Add **JavaScript Codemode** and the desired direct tools to the agent. Execution loads only that agent's selected tools through the normal authenticated loader, validates nested arguments with the real tool schema, preserves run metadata/cancellation and stable nested IDs, and applies argument/output protection. No extra approval prompts are added. Existing execution-policy denials fail closed rather than bypassing restrictions; no approval continuation layer is introduced for this personal app.
 
-Image forwarding remains pending; only text/JSON output is supported now. No deferred tool exposure or cross-script storage is added.
+Image tool results expose opaque refs, not image bytes to scripts. Call `image(block.ref)` to forward a selected, host-owned image block. Unknown refs are rejected. Images are bounded by `maxImages` (8) and `maxImageBytes` (2097152). Only already-returned image blocks are forwarded; scripts cannot fetch arbitrary images. No deferred tool exposure or cross-script storage is added.
 
 ## Configuration
 
-`codemode` is disabled by default in `librechat.yaml`. Fields: `enabled`, `timeoutMs` (30000), `memoryBytes` (33554432), `maxCodeBytes` (65536), `maxOutputBytes` (32768), `maxValueBytes` (131072), `maxToolCalls` (50), and `concurrency` (4). Enabling config alone does not register the unfinished host integration.
+`codemode` is disabled by default in `librechat.yaml`. Fields: `enabled`, `timeoutMs` (30000), `memoryBytes` (33554432), `maxCodeBytes` (65536), `maxOutputBytes` (32768), `maxValueBytes` (131072), `maxToolCalls` (50), and `concurrency` (4). Enable config, then add the tool in the agent builder.
 
-Focused tests run the real QuickJS engine and worker: parallel asynchronous calls, discovery, selected output, missing host globals, synchronous infinite loops, unresolved promises, cancellation, code/value/output/call bounds, sanitized tool failures, untrusted result text and stable nested identity. Real app approval/replay verification is required when the dispatcher is connected.
+Focused tests run the real QuickJS engine and worker: parallel asynchronous calls, discovery, selected output, missing host globals, synchronous infinite loops, unresolved promises, cancellation, code/value/output/call bounds, sanitized tool failures, untrusted result text and stable nested identity. The real app browser check exercises an agent → codemode → notification → database flow without prompts. Existing execution-policy rejection and opaque-image forwarding are also covered by focused tests.
