@@ -6,7 +6,7 @@ Maintained integration branch: `fork/homelab`, initially developed on `feat/pi-s
 
 ### Native Pi session integration
 
-Implemented locally on `feat/native-pi-session-sync`: native snapshot route, project/chat/message storage, binding/history guards, request-local turn correlation and automatic open-chat refresh/status. The real disposable-Mongo and browser import/refresh/guard checks pass. One configured owner and one gateway; no multi-user management. See [native Pi sync](pi-sync.md). Live rollout and Pi notification-tool forwarding remain separate steps.
+Implemented locally on `feat/native-pi-session-sync`: native snapshot route, project/chat/message storage, binding/history guards, request-local turn correlation and automatic open-chat refresh/status. The real disposable-Mongo and browser import/refresh/guard checks pass. One configured owner and one gateway; no multi-user management. See [native Pi sync](pi-sync.md). Pi notification-tool forwarding is also implemented. The integrated fork is deployed to the personal homelab; see [release notes](homelab-release.md).
 
 Port the homelab's tested prototype into native package boundaries, not image-build source patches:
 
@@ -31,7 +31,7 @@ Notifications are an agent capability, not only automatic completion alerts. Exa
 - Browser/mobile Web Push uses opt-in device subscriptions, the existing service worker and direct best-effort sending. For this personal app, there is no delivery queue or retry worker. Keep destinations user-configured; agents cannot choose arbitrary recipients or URLs.
 - Pi should eventually reach the same authenticated notification service through a tool integration.
 
-Implemented locally: `notify_user` registration, authenticated inbox/config/read routes, durable Mongo storage and quotas, account-deletion cleanup, and a localized sidebar inbox with an unread badge, polling, read state, and conversation links. The actual agent tool → database → browser flow passes against an isolated server and synthetic model. This is not deployed. Pi's connection to the same notification service remains pending. On `feat/pwa-push-notifications`, device push now uses a simple enable/disable button and immediate sending from `notify_user`. Device quotas and cross-account binding machinery were removed. See [PWA push](pwa-push.md) for setup and test limits; actual-phone delivery is not yet verified.
+Implemented locally: `notify_user` registration, authenticated inbox/config/read routes, durable Mongo storage and quotas, account-deletion cleanup, and a localized sidebar inbox with an unread badge, polling, read state, and conversation links. The actual agent tool → database → browser flow passes against an isolated server and synthetic model. The integrated fork is now deployed to the personal homelab, including Pi forwarding to the same notification service; see [release notes](homelab-release.md). On `feat/pwa-push-notifications`, device push now uses a simple enable/disable button and immediate sending from `notify_user`. Device quotas and cross-account binding machinery were removed. See [PWA push](pwa-push.md) for setup and test limits; actual-phone delivery is not yet verified.
 
 Enable in `librechat.yaml` and add **Notify User** to the agent's tools:
 
