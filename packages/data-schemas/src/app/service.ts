@@ -213,6 +213,7 @@ export const AppService = async (params?: {
     webSearch,
     githubCompare: config.githubCompare,
     notifications: config.notifications,
+    piSync: config.piSync,
     mcpSettings,
     mcpAppSandbox,
     fileStrategy,

@@ -16,6 +16,7 @@ import type {
 import type { TInsightsAccessResponse, TInsightsParams, TInsightsResponse } from './types/insights';
 import type { ScheduleMCPConsentView, ConfirmScheduleMCPConsent } from './types/scheduleConsent';
 import type { TFileConfig } from './file-config';
+import type { PiSyncStatus } from './pi';
 import type * as tl from './types/tools';
 import type * as t from './types';
 import { TOOL_CALL_PREVIEWS_PARAM, TOOL_CALL_PREVIEWS_VERSION } from './previews';
@@ -1061,6 +1062,10 @@ export function revokePushDevice(id: string): Promise<{ ok: true }> {
 
 export function listNotifications(): Promise<NotificationList> {
   return request.get(endpoints.notifications());
+}
+
+export function getPiSyncStatus(id: string): Promise<PiSyncStatus | null> {
+  return request.get(endpoints.piSyncStatus(id));
 }
 
 export function getNotificationConfig(): Promise<NotificationPolicy> {

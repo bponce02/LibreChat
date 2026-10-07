@@ -42,6 +42,7 @@ import Landing from './Landing';
 import Header from './Header';
 import { cn } from '~/utils';
 import store from '~/store';
+import Pi from './Pi';
 
 function LoadingSpinner() {
   return (
@@ -248,6 +249,11 @@ function ChatView({
                               isLandingPage && 'max-w-3xl transition-all duration-200 xl:max-w-4xl',
                             )}
                           >
+                            {conversationId &&
+                              String(activeConversation?.endpoint) === 'Local Pi' &&
+                              activeConversation?.model?.startsWith('pi/session-') && (
+                                <Pi conversationId={conversationId} isSubmitting={isSubmitting} />
+                              )}
                             {isLandingPage && <ConversationStarters />}
                             {isSubagentThreadReadOnly ? (
                               <div

@@ -34,6 +34,7 @@ import { createSessionModel } from './session';
 import { createPasskeyModel } from './passkey';
 import { createBalanceModel } from './balance';
 import { createMessageModel } from './message';
+import { createPiSyncLinkModel } from './pi';
 import { createActionModel } from './action';
 import { createBannerModel } from './banner';
 import { createPresetModel } from './preset';
@@ -58,6 +59,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
   Notification: ReturnType<typeof createNotificationModel>;
   NotificationQuota: ReturnType<typeof createNotificationQuotaModel>;
   PushDevice: ReturnType<typeof createPushDeviceModel>;
+  PiSyncLink: ReturnType<typeof createPiSyncLinkModel>;
   ToolApprovalGrant: ReturnType<typeof createToolApprovalGrantModel>;
   Token: ReturnType<typeof createTokenModel>;
   Session: ReturnType<typeof createSessionModel>;
@@ -112,6 +114,7 @@ export function createModels(mongoose: typeof import('mongoose')): {
     Notification: createNotificationModel(mongoose),
     NotificationQuota: createNotificationQuotaModel(mongoose),
     PushDevice: createPushDeviceModel(mongoose),
+    PiSyncLink: createPiSyncLinkModel(mongoose),
     ToolApprovalGrant: createToolApprovalGrantModel(mongoose),
     Token: createTokenModel(mongoose),
     Session: createSessionModel(mongoose),

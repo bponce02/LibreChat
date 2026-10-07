@@ -40,6 +40,7 @@ import {
   scheduledMCPReadOnlyPolicySchema,
 } from './types/scheduleConsent';
 import { notificationsConfigSchema } from './notifications';
+import { piSyncConfigSchema } from './pi';
 
 export const AGENT_BACKGROUND_COMPLETION_RESULT_MAX_CHARS_DEFAULT = 24 * 1024;
 export const AGENT_BACKGROUND_COMPLETION_RESULT_MAX_CHARS_HARD_MAX = 64 * 1024;
@@ -3856,6 +3857,7 @@ export const configSchema = z.object({
   langfuse: langfuseConfigSchema.optional(),
   memory: memorySchema.optional(),
   notifications: notificationsConfigSchema.optional(),
+  piSync: piSyncConfigSchema.optional(),
   summarization: summarizationConfigSchema.optional(),
   skillSync: skillSyncConfigSchema,
   secureImageLinks: z.boolean().optional(),

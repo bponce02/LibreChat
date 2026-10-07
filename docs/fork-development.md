@@ -6,6 +6,8 @@ Maintained integration branch: `fork/homelab`, initially developed on `feat/pi-s
 
 ### Native Pi session integration
 
+Implemented locally on `feat/native-pi-session-sync`: native snapshot route, project/chat/message storage, binding/history guards, request-local turn correlation and automatic open-chat refresh/status. The real disposable-Mongo and browser import/refresh/guard checks pass. One configured owner and one gateway; no multi-user management. See [native Pi sync](pi-sync.md). Live rollout and Pi notification-tool forwarding remain separate steps.
+
 Port the homelab's tested prototype into native package boundaries, not image-build source patches:
 
 - Owner-scoped Pi session bindings and history fingerprints in `packages/data-schemas`.

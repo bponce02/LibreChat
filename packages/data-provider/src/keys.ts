@@ -1,5 +1,6 @@
 export enum QueryKeys {
   notifications = 'notifications',
+  piSync = 'piSync',
   notificationDevices = 'notificationDevices',
   notificationConfig = 'notificationConfig',
   messages = 'messages',

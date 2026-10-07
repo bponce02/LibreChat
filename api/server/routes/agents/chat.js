@@ -61,6 +61,7 @@ const restoreResumeContext = async (req, res, next) => {
   next();
 };
 
+router.use(require('~/server/services/Pi').guard);
 router.use(restoreResumeContext);
 router.use(
   createMessageFilterPii({

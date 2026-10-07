@@ -81,6 +81,7 @@ const storedMessageMutationMiddleware = [
 ];
 
 router.use(requireJwtAuth);
+router.use(require('~/server/services/Pi').protectHistory);
 router.post(
   '/:conversationId/owner-text',
   createPrivateTextView({

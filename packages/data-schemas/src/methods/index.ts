@@ -108,6 +108,7 @@ import {
   type ParentSubagentThreadRecord,
 } from './conversation';
 import { createChatProjectMethods, type ChatProjectMethods } from './chatProject';
+import { createPiSyncMethods } from './pi';
 export type {
   AssignConversationToProjectResult,
   ChatProjectSortBy,
@@ -286,6 +287,7 @@ export type AllMethods = ToolApprovalGrantStorage &
   MessageMethods &
   ConversationMethods &
   ChatProjectMethods &
+  ReturnType<typeof createPiSyncMethods> &
   NotificationMethods &
   PushDeviceMethods &
   TxMethods &
@@ -530,6 +532,11 @@ export function createMethods(
     ...messageMethods,
     ...conversationMethods,
     ...createChatProjectMethods(mongoose),
+    ...createPiSyncMethods(mongoose, {
+      ...conversationMethods,
+      ...messageMethods,
+      ...createChatProjectMethods(mongoose),
+    }),
     /* Tier 3 */
     ...txMethods,
     ...transactionMethods,

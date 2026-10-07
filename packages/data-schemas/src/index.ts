@@ -1,4 +1,5 @@
 export * from './app';
+export type { PiSyncStore, PiSyncLink, PiSyncMessage } from './types/pi';
 export * from './admin';
 export * from './common';
 export * from './crypto';

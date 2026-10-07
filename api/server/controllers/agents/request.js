@@ -17,6 +17,7 @@ const {
   getReferencedQuotes,
   resolveTitleTiming,
   GenerationJobManager,
+  attachPiTurn,
   createConvoPersistenceSignal,
   recoverTurnMessageReference,
   filterPersistableAbortContent,
@@ -2019,6 +2020,12 @@ const ResumableAgentController = async (req, res, next, initializeClient, addTit
       }
     });
 
+    attachPiTurn(req, {
+      conversationId: effectiveConversationId,
+      userMessageId: preallocatedUserMessageId,
+      responseMessageId: preallocatedResponseMessageId,
+      expectedLeaf: res.locals.piExpectedLeaf,
+    });
     /** @type {{ client: TAgentClient; userMCPAuthMap?: Record<string, Record<string, string>> }} */
     const result = await initializeClient({
       req,

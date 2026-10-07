@@ -1,0 +1,18 @@
+version: 1.3.6
+cache: true
+piSync:
+  enabled: true
+  ownerId: 0123456789abcdef01234567
+  pollIntervalMs: 5000
+endpoints:
+  openAI:
+    titleConvo: false
+  custom:
+    - name: Local Pi
+      apiKey: e2e-not-real
+      baseURL: http://127.0.0.1:1/v1
+      models:
+        default: [pi/session-browser-test]
+        fetch: false
+      titleConvo: false
+      modelDisplayLabel: Pi

@@ -447,6 +447,7 @@ const startServer = async () => {
   app.use('/api/banner', routes.banner);
   app.use('/api/memories', routes.memories);
   app.use('/api/notifications', routes.notifications);
+  app.use('/api/pi-sync', require('./routes/pi'));
   app.use('/api/schedules', rejectScheduleWritesUntilReady, routes.schedules);
   app.use('/api/permissions', routes.accessPermissions);
 

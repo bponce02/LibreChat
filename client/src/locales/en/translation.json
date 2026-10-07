@@ -1,4 +1,8 @@
 {
+  "com_ui_pi_loading": "Checking Pi session…",
+  "com_ui_pi_error": "Could not check Pi session.",
+  "com_ui_pi_paused": "Pi sync is paused for this chat.",
+  "com_ui_pi_linked": "Linked to Pi · History refreshes automatically. Edit or branch in Pi.",
   "com_ui_private_text_hidden": "Private details hidden from the model",
   "com_ui_private_text_loading": "Loading your original message…",
   "com_ui_private_text_retry": "Retry loading original",

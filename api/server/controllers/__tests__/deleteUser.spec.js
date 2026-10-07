@@ -115,6 +115,7 @@ jest.mock('~/models', () => ({
   deleteAllUserMemories: jest.fn(),
   deleteUserNotifications: jest.fn().mockResolvedValue(undefined),
   deleteUserPushDevices: jest.fn().mockResolvedValue(undefined),
+  deleteUserPiLinks: jest.fn().mockResolvedValue(undefined),
   deleteActions: jest.fn(),
   deleteTokens: jest.fn(),
   removeUserFromAllGroups: jest.fn(),

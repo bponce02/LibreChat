@@ -192,6 +192,7 @@ export const forkConversation = () => `${conversationsRoot}/fork`;
 
 export const duplicateConversation = () => `${conversationsRoot}/duplicate`;
 
+export const piSyncStatus = (id: string) => `${BASE_URL}/api/pi-sync/${encodeURIComponent(id)}`;
 export const notifications = () => `${BASE_URL}/api/notifications`;
 export const notificationDevices = () => `${notifications()}/devices`;
 export const notificationDevice = (id: string) =>
