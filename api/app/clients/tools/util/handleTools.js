@@ -5,6 +5,7 @@ const {
   createGitHubCompareTool,
   createNotificationTool,
   createCodemodeTool,
+  createCodexSearchTool,
   webPushSender,
   getProxyDispatcher,
   toolkitParent,
@@ -240,6 +241,12 @@ const loadTools = async ({
   };
 
   const customConstructors = {
+    codex_web_search: () =>
+      createCodexSearchTool({
+        policy: options.req?.config?.codexSearch,
+        apiKey: process.env.CODEX_CONNECTOR_API_KEY,
+        fetch: globalThis.fetch,
+      }),
     codemode: () =>
       createCodemodeTool({
         policy: options.req?.config?.codemode,

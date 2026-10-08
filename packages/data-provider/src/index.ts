@@ -110,3 +110,4 @@ export * from './approval';
 export * from './notifications';
 export * from './pi';
 export * from './codemode';
+export * from './search';

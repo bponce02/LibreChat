@@ -98,6 +98,13 @@
     "authConfig": []
   },
   {
+    "name": "Codex Web Search",
+    "pluginKey": "codex_web_search",
+    "description": "Search the web through your Codex subscription, returning a grounded answer and source links.",
+    "agentsOnly": true,
+    "authConfig": []
+  },
+  {
     "name": "Notify User",
     "pluginKey": "notify_user",
     "description": "Send a notification to your LibreChat inbox, linked to the current conversation.",

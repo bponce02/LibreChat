@@ -220,6 +220,15 @@ describe('loadFiltersConfig', () => {
   });
 });
 
+describe('AppService Codex search config', () => {
+  it('preserves configured native search and leaves it absent by default', async () => {
+    const codexSearch = { enabled: true, model: 'test-model' };
+    const configured = await AppService({ config: { codexSearch } });
+    expect(configured.codexSearch).toEqual(codexSearch);
+    expect((await AppService({ config: {} })).codexSearch).toBeUndefined();
+  });
+});
+
 describe('AppService assistants config', () => {
   it('preserves configured Assistants API versions', async () => {
     const config = {

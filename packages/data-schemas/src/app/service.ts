@@ -215,6 +215,7 @@ export const AppService = async (params?: {
     notifications: config.notifications,
     piSync: config.piSync,
     codemode: config.codemode,
+    codexSearch: config.codexSearch,
     mcpSettings,
     mcpAppSandbox,
     fileStrategy,

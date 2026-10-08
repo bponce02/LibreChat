@@ -71,6 +71,7 @@ export interface AppConfig {
   notifications?: TCustomConfig['notifications'];
   piSync?: TCustomConfig['piSync'];
   codemode?: TCustomConfig['codemode'];
+  codexSearch?: TCustomConfig['codexSearch'];
   /** Source-scoped content filter configuration */
   filters?: FiltersConfig;
   /** Message filter configuration (PII and future filter types) */

@@ -10,6 +10,7 @@ const {
   getGitHubCompareCatalogTools,
   getNotificationCatalogTools,
   getCodemodeCatalogTools,
+  getCodexSearchCatalogTools,
   isToolModuleFile,
   oaiToolkit,
   geminiToolkit,
@@ -114,6 +115,7 @@ function loadAndFormatTools({ directory, adminFilter = [], adminIncluded = [] })
     ...getGitHubCompareCatalogTools(adminIncluded, adminFilter),
     ...getNotificationCatalogTools(adminIncluded, adminFilter),
     ...getCodemodeCatalogTools(adminIncluded, adminFilter),
+    ...getCodexSearchCatalogTools(adminIncluded, adminFilter),
   );
 
   return tools.reduce((map, tool) => {

@@ -1,0 +1,11 @@
+version: 1.3.6
+cache: true
+codemode:
+  enabled: true
+codexSearch:
+  enabled: true
+  baseUrl: http://127.0.0.1:8792/v1
+  model: test-model
+endpoints:
+  openAI:
+    titleConvo: false

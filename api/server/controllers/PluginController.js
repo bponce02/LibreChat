@@ -6,6 +6,7 @@ const {
   filterGitHubComparePlugins,
   filterNotificationPlugins,
   filterCodemodePlugins,
+  filterCodexSearchPlugins,
 } = require('@librechat/api');
 const { getCachedTools, setCachedTools } = require('~/server/services/Config');
 const { availableTools, toolkits } = require('~/app/clients/tools');
@@ -25,7 +26,10 @@ const getAvailablePluginsController = async (req, res) => {
     const uniquePlugins = filterUniquePlugins(
       filterNotificationPlugins(
         filterGitHubComparePlugins(
-          filterCodemodePlugins(availableTools, appConfig?.codemode),
+          filterCodexSearchPlugins(
+            filterCodemodePlugins(availableTools, appConfig?.codemode),
+            appConfig?.codexSearch,
+          ),
           appConfig?.githubCompare,
         ),
         appConfig?.notifications,
@@ -85,7 +89,10 @@ const getAvailableTools = async (req, res) => {
     const uniquePlugins = filterUniquePlugins(
       filterNotificationPlugins(
         filterGitHubComparePlugins(
-          filterCodemodePlugins(availableTools, appConfig?.codemode),
+          filterCodexSearchPlugins(
+            filterCodemodePlugins(availableTools, appConfig?.codemode),
+            appConfig?.codexSearch,
+          ),
           appConfig?.githubCompare,
         ),
         appConfig?.notifications,

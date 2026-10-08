@@ -6,6 +6,7 @@ import {
 import type { ExtendedJsonSchema } from './schema';
 import { AskUserQuestionToolDefinition } from '~/agents/hitl/askUserQuestionTool';
 import { notificationDefinition } from '~/notifications/catalog';
+import { codexSearchDefinition } from '~/search/catalog';
 import { codemodeDefinition } from '~/codemode/catalog';
 import { geminiToolkit } from '~/tools/toolkits/gemini';
 import { oaiToolkit } from '~/tools/toolkits/oai';
@@ -446,6 +447,12 @@ const agentToolDefinitions: Record<string, ToolRegistryDefinition> = {
     name: codemodeDefinition.name,
     description: codemodeDefinition.description,
     schema: codemodeDefinition.parameters,
+    toolType: 'builtin',
+  },
+  codex_web_search: {
+    name: codexSearchDefinition.name,
+    description: codexSearchDefinition.description,
+    schema: codexSearchDefinition.parameters,
     toolType: 'builtin',
   },
   notify_user: {

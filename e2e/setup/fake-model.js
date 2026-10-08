@@ -3562,6 +3562,42 @@ function resolveResponses({ graph, messages, text, toolNames }) {
     });
   }
 
+  const codexSearchLabel = getMarkerValue(text, 'E2E_CODEX_SEARCH:');
+  if (codexSearchLabel) {
+    const callId = `call_e2e_codex_search_${codexSearchLabel}`;
+    const direct = codexSearchLabel === 'direct';
+    const toolName = direct ? 'codex_web_search' : 'codemode';
+    if (!toolNames.has(toolName)) return { responses: ['E2E search tool not advertised'] };
+    return {
+      responses: ['', ''],
+      toolCalls: [
+        {
+          id: callId,
+          name: toolName,
+          type: 'tool_call',
+          args: direct
+            ? { query: 'Official Codex documentation' }
+            : {
+                code: `const result = await tools.codex_web_search({query:'Official Codex documentation'}); text(result);`,
+              },
+        },
+      ],
+      resolveOnStream: (messages) => {
+        const result = findToolMessage(messages, callId);
+        if (!result) return null;
+        const content = getContentText(result.content);
+        return {
+          responses: [
+            content.includes('Grounded native search answer') &&
+            content.includes('https://developers.openai.com/codex/')
+              ? 'E2E Codex search completed\n\n[Official Codex docs](https://developers.openai.com/codex/)'
+              : `E2E Codex search failed: ${content}`,
+          ],
+        };
+      },
+    };
+  }
+
   const codemodeLabel = getMarkerValue(text, 'E2E_CODEMODE:');
   if (codemodeLabel) {
     const callId = `call_e2e_codemode_${codemodeLabel}`;
