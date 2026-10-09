@@ -197,6 +197,11 @@ export const notifications = () => `${BASE_URL}/api/notifications`;
 export const notificationDevices = () => `${notifications()}/devices`;
 export const notificationDevice = (id: string) =>
   `${notificationDevices()}/${encodeURIComponent(id)}`;
+export const workspace = (operation: string) => `${apiBaseUrl()}/api/workspace/${operation}`;
+export const workspaceSocket = () => workspace('socket');
+export const workspaceFile = (operation: string, path: string) =>
+  `${workspace(operation)}?path=${encodeURIComponent(path)}`;
+
 export const notificationConfig = () => `${notifications()}/config`;
 export const readNotification = (id: string) => `${notifications()}/${encodeURIComponent(id)}/read`;
 

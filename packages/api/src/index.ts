@@ -77,6 +77,7 @@ export * from './pi';
 export * from './codemode';
 export * from './search/tool';
 export * from './search/catalog';
+export * from './workspace/socket';
 /* Model Specs */
 export * from './modelSpecs';
 /* Agents */

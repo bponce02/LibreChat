@@ -13,6 +13,13 @@ import type {
   TTraceRecordParams,
   TTraceRecordDetail,
 } from './types/traces';
+import type {
+  WorkspacePublicConfig,
+  WorkspaceListing,
+  WorkspaceFile,
+  WorkspaceWrite,
+  WorkspaceSession,
+} from './workspace';
 import type { TInsightsAccessResponse, TInsightsParams, TInsightsResponse } from './types/insights';
 import type { ScheduleMCPConsentView, ConfirmScheduleMCPConsent } from './types/scheduleConsent';
 import type { TFileConfig } from './file-config';
@@ -1058,6 +1065,36 @@ export function registerPushDevice(input: {
 
 export function revokePushDevice(id: string): Promise<{ ok: true }> {
   return request.delete(endpoints.notificationDevice(id));
+}
+
+export function getWorkspaceConfig(): Promise<WorkspacePublicConfig> {
+  return request.get(endpoints.workspace('config'));
+}
+export function listWorkspaceFiles(path: string): Promise<WorkspaceListing> {
+  return request.get(endpoints.workspaceFile('files', path));
+}
+export function readWorkspaceFile(path: string): Promise<WorkspaceFile> {
+  return request.get(endpoints.workspaceFile('file', path));
+}
+export function writeWorkspaceFile(input: WorkspaceWrite): Promise<{ ok: true }> {
+  return request.post(endpoints.workspace('file'), input);
+}
+export function uploadWorkspaceFile(input: {
+  directory: string;
+  file: File;
+}): Promise<{ ok: true }> {
+  const form = new FormData();
+  form.append('file', input.file);
+  return request.postMultiPart(endpoints.workspaceFile('upload', input.directory), form);
+}
+export function downloadWorkspaceFile(path: string): Promise<Blob> {
+  return request.get(endpoints.workspaceFile('download', path), { responseType: 'blob' });
+}
+export function createWorkspaceTerminal(directory: string): Promise<WorkspaceSession> {
+  return request.post(endpoints.workspace('terminals'), { directory });
+}
+export function closeWorkspaceTerminal(id: string): Promise<{ ok: true }> {
+  return request.delete(endpoints.workspace(`terminals/${encodeURIComponent(id)}`));
 }
 
 export function listNotifications(): Promise<NotificationList> {

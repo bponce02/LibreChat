@@ -72,6 +72,7 @@ export interface AppConfig {
   piSync?: TCustomConfig['piSync'];
   codemode?: TCustomConfig['codemode'];
   codexSearch?: TCustomConfig['codexSearch'];
+  workspace?: TCustomConfig['workspace'];
   /** Source-scoped content filter configuration */
   filters?: FiltersConfig;
   /** Message filter configuration (PII and future filter types) */

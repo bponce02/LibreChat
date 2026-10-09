@@ -447,6 +447,7 @@ const startServer = async () => {
   app.use('/api/banner', routes.banner);
   app.use('/api/memories', routes.memories);
   app.use('/api/notifications', routes.notifications);
+  app.use('/api/workspace', require('./routes/workspace'));
   app.use('/api/pi-sync', require('./routes/pi'));
   app.use('/api/schedules', rejectScheduleWritesUntilReady, routes.schedules);
   app.use('/api/permissions', routes.accessPermissions);
@@ -536,6 +537,8 @@ const startServer = async () => {
   });
 
   configureServerTimeouts(server);
+  await require('./services/Workspace').attach(server);
+
   logger.info('HTTP server timeout configuration', {
     keepAliveTimeout: server.keepAliveTimeout,
     keepAliveTimeoutBuffer: server.keepAliveTimeoutBuffer,

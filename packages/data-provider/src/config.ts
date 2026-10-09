@@ -40,6 +40,7 @@ import {
   scheduledMCPReadOnlyPolicySchema,
 } from './types/scheduleConsent';
 import { notificationsConfigSchema } from './notifications';
+import { workspaceConfigSchema } from './workspace';
 import { codexSearchConfigSchema } from './search';
 import { codemodeConfigSchema } from './codemode';
 import { piSyncConfigSchema } from './pi';
@@ -3862,6 +3863,7 @@ export const configSchema = z.object({
   piSync: piSyncConfigSchema.optional(),
   codemode: codemodeConfigSchema.optional(),
   codexSearch: codexSearchConfigSchema.optional(),
+  workspace: workspaceConfigSchema.optional(),
   summarization: summarizationConfigSchema.optional(),
   skillSync: skillSyncConfigSchema,
   secureImageLinks: z.boolean().optional(),

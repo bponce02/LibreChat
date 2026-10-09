@@ -108,6 +108,7 @@ export type NavLink = {
   label?: string;
   icon: LucideIcon | React.FC;
   Component?: React.ComponentType;
+  keepMounted?: boolean;
   onClick?: (e?: React.MouseEvent) => void;
   variant?: 'default' | 'ghost';
   disabled?: boolean;

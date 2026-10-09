@@ -76,6 +76,7 @@ export {
   loginPage,
   registerPage,
   apiBaseUrl,
+  workspaceSocket,
   sharedFileDownload,
   buildLoginRedirectUrl,
 } from './api-endpoints';
@@ -111,3 +112,4 @@ export * from './notifications';
 export * from './pi';
 export * from './codemode';
 export * from './search';
+export * from './workspace';

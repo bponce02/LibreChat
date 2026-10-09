@@ -197,6 +197,7 @@ scripts/activity-labels/results/
 /e2e/pi/.test-results/
 /e2e/codemode/.test-results/
 e2e/search/.test-results/
+/e2e/workspace/.test-results/
 !e2e/codemode/librechat.yaml
 !e2e/pi/librechat.yaml
 # Chrome user-data directories a Lighthouse run leaves in the repository root when the browser

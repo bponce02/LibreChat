@@ -1,8 +1,17 @@
 import { useMemo } from 'react';
 import { MCPIcon, OpenAIMinimalIcon } from '@librechat/client';
 import {
+  Permissions,
+  EModelEndpoint,
+  PermissionTypes,
+  isParamEndpoint,
+  isAgentsEndpoint,
+  isAssistantsEndpoint,
+} from 'librechat-data-provider';
+import {
   Bot,
   Bell,
+  TerminalSquare,
   Brain,
   Bookmark,
   NotebookPen,
@@ -11,14 +20,6 @@ import {
   ArrowRightToLine,
   SlidersHorizontal,
 } from 'lucide-react';
-import {
-  Permissions,
-  EModelEndpoint,
-  PermissionTypes,
-  isParamEndpoint,
-  isAgentsEndpoint,
-  isAssistantsEndpoint,
-} from 'librechat-data-provider';
 import type { TInterfaceConfig, TEndpointsConfig } from 'librechat-data-provider';
 import type { NavLink } from '~/common';
 import {
@@ -33,8 +34,10 @@ import AgentPanelSwitch from '~/components/SidePanel/Agents/AgentPanelSwitch';
 import NotificationPanel from '~/components/SidePanel/Notifications/Panel';
 import BookmarkPanel from '~/components/SidePanel/Bookmarks/BookmarkPanel';
 import PanelSwitch from '~/components/SidePanel/Builder/PanelSwitch';
+import WorkspaceEntry from '~/components/SidePanel/Workspace/Entry';
 import { SchedulePanel } from '~/components/SidePanel/Schedules';
 import Parameters from '~/components/SidePanel/Parameters/Panel';
+import { useWorkspaceConfig } from '~/data-provider/Workspace';
 import { MemoryPanel } from '~/components/SidePanel/Memories';
 import { PromptsAccordion } from '~/components/Prompts';
 import { SkillsAccordion } from '~/components/Skills';
@@ -97,6 +100,7 @@ export default function useSideNavLinks({
     permission: Permissions.USE,
   });
   const { availableMCPServers } = useMCPServerManager();
+  const { data: workspaceConfig } = useWorkspaceConfig();
   const { data: notificationConfig } = useNotificationConfig();
   const { data: notifications } = useNotifications();
 
@@ -105,6 +109,16 @@ export default function useSideNavLinks({
 
   const Links = useMemo(() => {
     const links: NavLink[] = [];
+
+    if (workspaceConfig?.enabled) {
+      links.push({
+        title: 'com_workspace_title',
+        icon: TerminalSquare,
+        id: 'workspace',
+        Component: WorkspaceEntry,
+        keepMounted: true,
+      });
+    }
 
     if (notificationConfig?.enabled) {
       const unreadCount = notifications?.unreadCount ?? 0;
@@ -255,6 +269,7 @@ export default function useSideNavLinks({
 
     return links;
   }, [
+    workspaceConfig?.enabled,
     notificationConfig?.enabled,
     notifications?.unreadCount,
     endpoint,

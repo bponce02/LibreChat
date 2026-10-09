@@ -227,6 +227,12 @@ describe('AppService Codex search config', () => {
     expect(configured.codexSearch).toEqual(codexSearch);
     expect((await AppService({ config: {} })).codexSearch).toBeUndefined();
   });
+
+  it('preserves the owner-only workspace policy', async () => {
+    const workspace = { enabled: true, ownerId: 'owner', rootPath: '/home/user' };
+    expect((await AppService({ config: { workspace } })).workspace).toEqual(workspace);
+    expect((await AppService({ config: {} })).workspace).toBeUndefined();
+  });
 });
 
 describe('AppService assistants config', () => {

@@ -2,6 +2,8 @@ export enum QueryKeys {
   notifications = 'notifications',
   piSync = 'piSync',
   notificationDevices = 'notificationDevices',
+  workspaceConfig = 'workspaceConfig',
+  workspaceFiles = 'workspaceFiles',
   notificationConfig = 'notificationConfig',
   messages = 'messages',
   /* Full content of one tool-call part, fetched when its preview is not enough */
@@ -130,6 +132,9 @@ export const DynamicQueryKeys = {
 } as const;
 
 export enum MutationKeys {
+  workspaceWrite = 'workspaceWrite',
+  workspaceUpload = 'workspaceUpload',
+  workspaceTerminal = 'workspaceTerminal',
   readNotification = 'readNotification',
   registerPushDevice = 'registerPushDevice',
   revokePushDevice = 'revokePushDevice',

@@ -1,0 +1,9 @@
+version: 1.3.6
+cache: true
+workspace:
+  enabled: true
+  ownerId: '000000000000000000000001'
+  baseUrl: http://127.0.0.1:8793
+endpoints:
+  openAI:
+    titleConvo: false
