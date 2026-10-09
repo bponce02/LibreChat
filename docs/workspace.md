@@ -1,6 +1,6 @@
 # Open Terminal Workspace
 
-Status: implemented and verified locally on `feat/open-terminal-workspace`. Not deployed. Homelab SSH and the public LibreChat URL were unreachable from the development machine during release preparation; no production configuration, containers, databases, tools or terminal files were changed.
+Status: deployed on the personal homelab from `feat/open-terminal-workspace`, source/image tag `361f0ecdc`. See [release details](workspace-release.md). Only LibreChat was recreated; Open Terminal, its workspace volume and other services were preserved. The owner requested a direct rollout without an isolated preflight.
 
 ## Configuration
 
@@ -9,12 +9,12 @@ Disabled by default. Add a policy to `librechat.yaml` only after confirming that
 ```yaml
 workspace:
   enabled: true
-  ownerId: ${LIBRECHAT_WORKSPACE_OWNER_ID}
+  ownerId: 'YOUR_EXISTING_USER_ID'
   baseUrl: http://open-terminal:8000
   rootPath: /home/user
 ```
 
-Set `LIBRECHAT_WORKSPACE_OWNER_ID` to the existing owner's user ID in the private server environment. Reuse `OPEN_TERMINAL_API_KEY`; never put it in the YAML, frontend, Git or browser URL. `DOMAIN_CLIENT` must identify the browser origin. Policies without a matching owner, API key or enable flag fail closed. Tenant accounts are not supported.
+Set `ownerId` to the existing owner's user ID. This field is a literal value, not an environment-variable interpolation. Reuse `OPEN_TERMINAL_API_KEY`; never put it in the YAML, frontend, Git or browser URL. `DOMAIN_CLIENT` must identify the browser origin. Policies without a matching owner, API key or enable flag fail closed. Tenant accounts are not supported.
 
 Defaults and configurable bounds are declared in `packages/data-provider/src/workspace.ts`: upstream/connection/auth-recheck timeouts, file/path/response/frame/buffer sizes, maximum entries/shells/dimensions and scrollback. Defaults include 256 KiB text, 5 MiB upload, 16 MiB download, two shells and 1,000 terminal scrollback lines.
 
@@ -58,7 +58,7 @@ Final checks were run serially in systemd scopes with one CPU core, no swap, and
 - Lighthouse passed on the current build under the one-core cap: median LCP 4,454 ms (4,500 ms budget), CLS 0.018 (0.1), and TBT 464 ms (500 ms). These are close to the budgets under this deliberately restricted CPU allocation.
 - Logs are `/tmp/workspace-{api,api-types,client,contracts,build,browser,lint,static,imports,gates,lighthouse}-final.log`; screenshots are under ignored `e2e/workspace/.test-results/`.
 
-Production-native protocol/PTY checks, deployment, and remote CI/review remain unverified. No production changes were made. This validation did not commit or push the feature branch.
+Subsequent live verification passed for the native PTY and file operations; see [release details](workspace-release.md). Remote CI/review remains unverified.
 
 ## Release checklist
 
@@ -67,4 +67,4 @@ Production-native protocol/PTY checks, deployment, and remote CI/review remain u
 3. Build the feature image and preflight it against an isolated cloned database and private config. Verify owner-only access and an actual native PTY, plus file read/save/upload/download with unique disposable test filenames. Clean up only those test shells/files.
 4. Check generation jobs and dedicated Workspace shells are idle. Do not interrupt active Pi turns or restart Open Terminal, Mongo, connectors or unrelated services.
 5. Enable the owner policy and recreate only LibreChat. Check public health and personally view a live screenshot with its URL. General's existing tools/settings and all chats must remain unchanged.
-6. Code/config rollback restores the prior LibreChat image and removes only the added workspace block/owner variable. Never restore Mongo automatically or remove the terminal volume. Remote CI/review is a separate unverified gate.
+6. Code/config rollback restores the prior LibreChat image and removes only the added workspace block. Never restore Mongo automatically or remove the terminal volume. Remote CI/review is a separate unverified gate.
