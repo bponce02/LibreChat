@@ -36,6 +36,7 @@ const {
   withRequestCodeInputs,
   resolveAgentCodeExecution,
   resolveMCPClientCapabilityProfile,
+  resolveMCPToolProvider,
 } = require('@librechat/api');
 const {
   AuthType,
@@ -742,7 +743,11 @@ const loadTools = async ({
         streamId: options.req?._resumableStreamId || null,
         jobCreatedAt: options.jobCreatedAt,
         model: agent?.model ?? model,
-        provider: agent?.provider ?? endpoint,
+        provider: resolveMCPToolProvider(
+          agent?.provider ?? endpoint,
+          undefined,
+          options.req?.config?.endpoints?.custom,
+        ),
       },
     })),
   );

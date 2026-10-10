@@ -13,6 +13,15 @@ describe('MCP reader images at the OpenAI model boundary', () => {
   it('uses a resolved provider instead of a custom endpoint display name', () => {
     expect(resolveMCPToolProvider('Codex Subscription', 'openai')).toBe('openai');
     expect(resolveMCPToolProvider('Local Pi', 'openai')).toBe('openai');
+    expect(
+      resolveMCPToolProvider('Codex Subscription', undefined, [{ name: 'Codex Subscription' }]),
+    ).toBe('openai');
+    expect(
+      resolveMCPToolProvider('Luna', undefined, [{ name: 'Luna', provider: 'anthropic' }]),
+    ).toBe('anthropic');
+    expect(
+      resolveMCPToolProvider('codex subscription', undefined, [{ name: 'Codex Subscription' }]),
+    ).toBe('codex subscription');
     expect(resolveMCPToolProvider('ANTHROPIC', 'openai')).toBe('anthropic');
     expect(resolveMCPToolProvider(undefined, 'OpenAI')).toBe('openai');
     expect(resolveMCPToolProvider('unknown', 'unsupported')).toBe('unknown');

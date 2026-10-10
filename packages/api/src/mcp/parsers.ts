@@ -114,11 +114,16 @@ const RECOGNIZED_PROVIDERS = new Set([
 export function resolveMCPToolProvider(
   metadataProvider?: string,
   capturedProvider?: string,
+  customEndpoints?: ReadonlyArray<{ name: string; provider?: string }>,
 ): string | undefined {
   const metadata = metadataProvider?.toLowerCase();
   const captured = capturedProvider?.toLowerCase();
   if (metadata && RECOGNIZED_PROVIDERS.has(metadata)) return metadata;
   if (captured && RECOGNIZED_PROVIDERS.has(captured)) return captured;
+  const endpoint = customEndpoints?.find(
+    (entry) => entry.name === metadataProvider || entry.name === capturedProvider,
+  );
+  if (endpoint) return endpoint.provider === 'anthropic' ? 'anthropic' : 'openai';
   return metadata || captured;
 }
 

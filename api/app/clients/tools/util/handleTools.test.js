@@ -837,6 +837,34 @@ describe('Tool Handlers', () => {
       );
     });
 
+    it('captures the configured backing provider for a named custom endpoint', async () => {
+      const serverName = 'open-terminal';
+      const toolKey = `read_file${Constants.mcp_delimiter}${serverName}`;
+      const serverConfig = { type: 'streamable-http', url: 'https://images.example.com/mcp' };
+      require('~/server/services/MCP').resolveMcpServerContext.mockResolvedValueOnce({
+        configServers: { [serverName]: serverConfig },
+        serverNames: [serverName],
+        rawServerNames: [serverName],
+      });
+      mockGetServerConfig.mockResolvedValue(serverConfig);
+      mockCreateMCPTool.mockResolvedValue({ name: toolKey });
+      await loadTools({
+        user: fakeUser._id.toString(),
+        agent: { id: 'vision-agent', provider: 'Codex Subscription' },
+        tools: [toolKey],
+        options: {
+          req: {
+            user: { id: fakeUser._id.toString(), role: 'USER' },
+            config: { endpoints: { custom: [{ name: 'Codex Subscription' }] } },
+            body: {},
+          },
+        },
+      });
+      expect(mockCreateMCPTool).toHaveBeenCalledWith(
+        expect.objectContaining({ provider: 'openai' }),
+      );
+    });
+
     it('still resolves legacy raw-keyed tools for a special-character server', async () => {
       const rawServerName = 'Connector: Company';
       const legacyKey = `search${Constants.mcp_delimiter}${rawServerName}`;
