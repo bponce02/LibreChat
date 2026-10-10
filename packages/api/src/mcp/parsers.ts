@@ -111,6 +111,17 @@ const RECOGNIZED_PROVIDERS = new Set([
   'bedrock',
 ]);
 
+export function resolveMCPToolProvider(
+  metadataProvider?: string,
+  capturedProvider?: string,
+): string | undefined {
+  const metadata = metadataProvider?.toLowerCase();
+  const captured = capturedProvider?.toLowerCase();
+  if (metadata && RECOGNIZED_PROVIDERS.has(metadata)) return metadata;
+  if (captured && RECOGNIZED_PROVIDERS.has(captured)) return captured;
+  return metadata || captured;
+}
+
 const imageFormatters: Record<string, undefined | t.ImageFormatter> = {
   // google: (item) => ({
   //   type: 'image',

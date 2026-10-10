@@ -1620,6 +1620,39 @@ describe('User parameter passing tests', () => {
   });
 
   describe('createMCPTool', () => {
+    it('does not let a custom endpoint label replace the captured image-capable provider', async () => {
+      const user = { id: 'image-owner', role: 'USER' };
+      require('~/models').getRoleByName.mockResolvedValue({
+        permissions: { [PermissionTypes.MCP_SERVERS]: { [Permissions.USE]: true } },
+      });
+      const callTool = jest.fn().mockResolvedValue(['', { content: [] }]);
+      mockGetMCPManager.mockReturnValue({ callTool });
+      const imageTool = await createMCPTool({
+        user,
+        config: { url: 'https://images.example.com/mcp' },
+        toolKey: `read_file${D}open-terminal`,
+        provider: 'openai',
+        userMCPAuthMap: {},
+        availableTools: {
+          [`read_file${D}open-terminal`]: {
+            function: {
+              description: 'Read image',
+              parameters: { type: 'object', properties: { path: { type: 'string' } } },
+            },
+          },
+        },
+      });
+      await imageTool.invoke(
+        { path: '/tmp/frame-23.jpg' },
+        {
+          configurable: { user },
+          metadata: { provider: 'Codex Subscription', thread_id: 'thread', run_id: 'run' },
+          toolCall: {},
+        },
+      );
+      expect(callTool).toHaveBeenCalledWith(expect.objectContaining({ provider: 'openai' }));
+    });
+
     it('preserves the full MCP tuple for the Assistants required-action sink', async () => {
       const mockUser = { id: 'assistants-app-user', role: 'USER' };
       const mockRes = { write: jest.fn(), flush: jest.fn() };

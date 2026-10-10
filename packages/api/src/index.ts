@@ -22,6 +22,7 @@ export * from './mcp/capabilities';
 export * from './mcp/authority';
 export * from './mcp/registry/MCPServersRegistry';
 export * from './mcp/MCPManager';
+export { resolveMCPToolProvider } from './mcp/parsers';
 export * from './mcp/connection';
 export * from './mcp/toolsChanged';
 export * from './mcp/oauth';

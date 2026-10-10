@@ -53,6 +53,7 @@ const {
   ScheduledMCPBearerError,
   prepareMCPAuthorizationMutation,
   resolveMCPClientCapabilityProfile,
+  resolveMCPToolProvider,
   getMCPConnectionPoolKey,
   getMCPUserConnectionPoolKey,
   bindScheduledMCPInvocation,
@@ -1321,7 +1322,7 @@ function createToolInstance({
         invocationUserId: config?.configurable?.user_id,
         serverConfig: capturedServerConfig,
       });
-      const provider = (config?.metadata?.provider || capturedProvider)?.toLowerCase();
+      const provider = resolveMCPToolProvider(config?.metadata?.provider, capturedProvider);
       const canUseMCP = mcpPermissionContext
         ? await mcpPermissionContext.canUseServers(permissionUser)
         : await userCanUseMCPServers(permissionUser);

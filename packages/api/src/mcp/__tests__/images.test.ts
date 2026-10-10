@@ -1,7 +1,7 @@
 import { projectArtifactPayload } from '@librechat/agents';
 import { AIMessage, HumanMessage, ToolMessage } from '@langchain/core/messages';
 
-import { formatToolContent } from '../parsers';
+import { formatToolContent, resolveMCPToolProvider } from '../parsers';
 
 const cases: Array<[string, Buffer]> = [
   ['image/png', Buffer.from([0x89, 0x50, 0x4e, 0x47, 0xff])],
@@ -10,11 +10,19 @@ const cases: Array<[string, Buffer]> = [
 ];
 
 describe('MCP reader images at the OpenAI model boundary', () => {
+  it('uses a resolved provider instead of a custom endpoint display name', () => {
+    expect(resolveMCPToolProvider('Codex Subscription', 'openai')).toBe('openai');
+    expect(resolveMCPToolProvider('Local Pi', 'openai')).toBe('openai');
+    expect(resolveMCPToolProvider('ANTHROPIC', 'openai')).toBe('anthropic');
+    expect(resolveMCPToolProvider(undefined, 'OpenAI')).toBe('openai');
+    expect(resolveMCPToolProvider('unknown', 'unsupported')).toBe('unknown');
+    expect(resolveMCPToolProvider()).toBeUndefined();
+  });
   it.each(cases)('preserves %s as an image, not serialized tool text', (mimeType, bytes) => {
     const data = bytes.toString('base64');
     const [content, artifact] = formatToolContent(
       { content: [{ type: 'image', mimeType, data }] },
-      'openai',
+      resolveMCPToolProvider('Codex Subscription', 'openai') as 'openai',
     );
     expect(content).toBe('');
     const messages = projectArtifactPayload([
