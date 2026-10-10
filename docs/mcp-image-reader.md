@@ -10,6 +10,22 @@ For the current OpenAI-compatible Codex endpoint, `formatToolContent` extracts M
 
 Regression: `packages/api/src/mcp/__tests__/images.test.ts` checks PNG/JPEG/WebP through the real parser and artifact projection. Together with the existing parser suite, 162 tests passed; API typechecking, ESLint and Prettier passed. Homelab also adds a connector regression for tool-image and projected-user-image turns (9 connector tests plus typechecking passed).
 
+## Named custom endpoints
+
+A subsequent real General chat exposed a second boundary: the tool loader captured the endpoint display name (`Codex Subscription`), and invocation metadata could also override the resolved provider with that name. The MCP parser's unknown-provider fallback intentionally serializes image blocks as text. Earlier checks using `openai` directly did not cover this live boundary.
+
+`resolveMCPToolProvider` now resolves configured custom endpoint names at tool loading, following the existing OpenAI-compatible default and explicit Anthropic override. At invocation, a known resolved provider is retained when metadata contains an unrecognized display name. Exact-case endpoint names are respected; unconfigured unknown providers keep their old fallback behavior. The CJS adapters only call the typed helper. Regression coverage includes both the loader and invocation wrapper, not just the parser.
+
+Deployed LibreChat image: `local/librechat-homelab:7a7c003f1`, with patches `25ece7f71` and `7a7c003f1`. The backend-only layer is based on Workspace image `361f0ecdc`; it replaces the compiled API package and the two changed CJS adapters without reinstalling dependencies or rebuilding the unchanged frontend. Build reproduction uses homelab `librechat/Dockerfile.mcp-provider` and the validated API build artifacts. The image was built with one CPU and 512 MiB through Docker's legacy builder, because the isolated BuildKit builder cannot resolve the host-local base image. API validation used the separate 6-GiB local systemd scope.
+
+The first metadata-only patch was not sufficient; the real General regression proved it still emitted serialized JPEG text. That temporary failed-test conversation was deleted. After the loader fix, a fresh real General chat, with no image attachment or external vision API, called `read_file_mcp_open-terminal` on `/home/user/slop-repo/projects/vision-tetris-agent/runs/perception-comparison/frame-23.jpg`. Its stored tool text output was empty instead of the previous 71,723-character serialized image, and its answer correctly identified the red Z in columns 2–4 of the top two rows and the settled purple T above an orange L. The original frame was personally viewed and matches that answer.
+
+Verification chat: https://librechat.develium.dev/c/1b2dc129-7750-5536-9ad7-7cdd95000e73
+
+The screenshot `/tmp/mcp-general-vision-live.png` proves the tool call and response. Its image thumbnail is unauthenticated in the synthetic bearer-only QA browser: `/images/` requires the existing session-cookie authorization, so this test browser returned HTTP 401 for the thumbnail even with a bearer header. The file is stored and the model's visual interpretation passed; no image authorization was bypassed or loosened. This is a test-auth limitation, not evidence that the model still receives serialized image text.
+
+Final focused results: 163 API parser/image tests and 147 legacy MCP/loader tests passed, along with API typechecking/build, ESLint, formatting and commit static gates. Only LibreChat was recreated after active jobs drained; Open Terminal, its MCP adapter, connectors, persistent files and General's 82 selected tools were preserved. Private app-overlay/image rollback: `/home/melissa/.local/state/librechat-fork/rollback-mcp-provider-25ece7f71/` (baseline `361f0ecdc`). Remote CI/review is still unverified. Irongrid's local vision documentation was inspected as a reference, but no irongrid code was changed.
+
 ## Actual-file verification
 
 A disposable adapter read the exact reported `/home/user/slop-repo/projects/vision-tetris-agent/runs/20261008-174529/smoke.jpg` and `/tmp/tetris.png` from the existing REST service. Their serialized MCP results contained actual image blocks with the correct MIME types and original bytes. The existing `gpt-6.1-sol` connector/model visually identified both as a Tetris start menu, including the green PLAY button, LEVEL: 1, dark-gray panel, rainbow logo and purple surroundings. The decoded MCP images were personally viewed and matched those descriptions.
